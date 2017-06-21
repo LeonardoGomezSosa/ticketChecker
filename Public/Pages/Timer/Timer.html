@@ -1,0 +1,78 @@
+<!--doctype html-->
+<!--doctype html-->
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>UploadFiles</title>
+
+    <!-- Bootstrap -->
+    {{template "estilos_ticket"}}
+    <!--<link href="../Resources/Plugins/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">-->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    {{template "scripts_ticket"}}
+
+</head>
+
+<body>
+
+    {{template "cabecera_ticket"}}
+
+    <section class="container">
+        <section class="container-fluid col-md-4 center">
+            {{if .Error}}
+            <div class="alert alert-danger" role="alert" id="alertas">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button> {{range $_,$elemento := .Error}}
+                <div>{{$elemento.Error}}</div>
+                {{end}}
+            </div>
+            {{end}} {{template "cabecera_ticket"}}
+        </section>
+        <section class="container">
+            <section>
+
+                {{if .}} {{$estado := .SEstado}} {{if $estado }}
+                <div class="alert alert-success">
+                    {{.SMsj}}
+                </div>
+                {{else}}
+                <div class="alert alert-danger">
+                    {{range $_,$elemento := .Error}} {{$elemento.Error}} {{end}}
+                </div>
+
+                {{end}} {{end}}
+
+                <div class="clearfix">&nbsp;</div>
+                <form action="/Timer" method="POST">
+                    <div>
+                        <div class="input-group">
+                            <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
+                            <input type="text" class="form-control" id="Entrada">
+                        </div>
+                    </div>
+                    <div class="clearfix">&nbsp;</div>
+                    <button class="btn btn-secondary">Cancelar</button>
+                    <input class="btn btn-primary" type="submit" value="Aceptar" id="AceptarCodigo">
+                </form>
+                <div class="clearfix">&nbsp;</div>
+            </section>
+        </section>
+    </section>
+
+    <aside></aside>
+
+    <footer></footer>
+</body>
+
+</html>

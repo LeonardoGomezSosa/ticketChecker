@@ -1,0 +1,33 @@
+body > section {
+    padding: 75px 0px 0px 0px;
+}
+
+/*Estilos de ismael*/
+.waitgif {
+	position: absolute;
+    bottom: 40%;
+    right: 40%;
+	z-index: 5;
+
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+}
+
+.table-hover  tr {
+    cursor: pointer;
+}
+
+.pagination li {
+	cursor: pointer;
+}
+
+.ProdExtraido {
+width: 20px;
+ height: 20px;
+}
+
+.ProdAsignar {
+	width: 20px; 
+	height: 20px;
+}

@@ -1,0 +1,102 @@
+<!--doctype html-->
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Eliminar Cuenta o Usuario</title>
+
+    {{template "cabecera_ticket"}} {{template "scripts_ticket"}}
+
+    <script src="/js/EliminarCuenta/EliminarCuenta.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+    <header>
+
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+                        aria-controls="navbar">
+                        <span class="sr-only">Auxiliar Catalogo</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Auxiliar Catalogo</a>
+                </div>
+
+
+            </div>
+        </nav>
+
+    </header>
+
+    <section class="container">
+        <section>
+
+            {{if .}} {{$estado := .SEstado}} {{if $estado }}
+            <div class="alert alert-success">
+                {{.SMsj}}
+            </div>
+            {{else}}
+            <div class="alert alert-danger">
+                {{range $_,$elemento := .Error}} {{$elemento.Error}} {{end}}
+            </div>
+
+            {{end}} {{end}}
+            <h1>Recuperar contrase&ntilde;a</h1>
+            <form action="/Recuperar" method="POST" class="col-md-6 col-lg-6">
+                <div class="clearfix">&nbsp;</div>
+                <div class="btn-group-vertical">
+                    <div class="input-group">
+                        <span class="input-group-addon"><label for="" class="glyphicon glyphicon-user"></label></span>
+                        <input type="text" name="Usuario" id="Usuario" class="form-control" placeholder="Usuario o Correo electr&oacute;nico">
+                    </div>
+                    <div class="clearfix">
+                        &nbsp;
+                    </div>
+                    <input type="submit" class="btn btn-large btn-block btn-primary" name="Enviar" value="Enviar">
+                    <a class="btn btn-large btn-block btn-default " href="/" role="button">Regresar</a>
+                </div>
+                <div class="clearfix">&nbsp;</div>
+            </form>
+
+
+        </section>
+    </section>
+
+    <aside></aside>
+
+    <div id="confirm" class="modal fade">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title text-danger" id="tituloModal"></h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+                </div>
+                <input type="hidden" id="op" value="">
+                <div class="modal-body text-center">
+                    <p>&iquest;Est&aacute; Ust&eacute;d seguro?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="Confirmar"> Enviar Correo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="nav navbar-fixed-bottom">
+        <CENTER> Hola</CENTER>
+    </footer>
+</body>
+
+</html>

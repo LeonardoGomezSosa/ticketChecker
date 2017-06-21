@@ -1,0 +1,57 @@
+<!--doctype html-->
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>RelationSHIP SAT 1.0</title>
+
+
+  {{template "estilos_ticket"}}
+
+  {{template "scripts_ticket"}}
+
+</head>
+
+<body>
+{{template "cabecera_ticket"}}
+    <section class="container">
+
+         {{if .SEstado}} {{if .SMsj}}
+          <div class="alert alert-success alert-dismissible text-center" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong><h4>{{.SMsj}}</h4></strong>
+          </div>
+          {{end}} {{else}} {{if .SMsj}}
+          <div class="alert alert-danger alert-dismissible text-center" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong><h4>{{.SMsj}}</h4></strong>
+          </div>
+          {{end}} {{end}}
+
+        </div>
+        <section>
+            <form enctype="multipart/form-data" action="/Carga" method="POST">
+                <fieldset>
+                    <legend>Cargar archivo</legend>
+                    <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1"><label class="glyphicon glyphicon-open-file">Subir Archivo</label></span>
+                              <input  type="file" name="uploadfile" text="Subir archivo"  aria-describedby="basic-addon1" class="form-control"/>
+                    </div>
+                        <div class="clearfix">&nbsp;</div>     
+                        <a class="btn btn-default" role="button" href="/Listas">Cancelar</a>
+                        <button class="btn btn-primary">Subir</button>
+                </fieldset>
+            </form>
+            <div>
+            </div>
+        </section>
+    </section>
+    <aside></aside>
+    <footer class="nav navbar-fixed-bottom"> <CENTER> Hola</CENTER></footer>
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+<!--doctype html-->
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>RelationSHIP SAT 1.0</title>
+
+  {{template "estilos_ticket"}}
+
+  {{template "scripts_ticket"}}
+
+</head>
+
+<body>
+
+{{template "cabecera_clasificador"}}
+
+
+    <section class="container" id="contenido">
+       
+      <div class="container">
+
+
+        <div class="row">
+
+          {{if .SEstado}} {{if .SMsj}}
+          <div class="alert alert-success alert-dismissible text-center" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong><h4>{{.SMsj}}</h4></strong>
+          </div>
+          {{end}} {{else}} {{if .SMsj}}
+          <div class="alert alert-danger alert-dismissible text-center" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong><h4>{{.SMsj}}</h4></strong>
+          </div>
+          {{end}} {{end}}
+        </div>
+
+<form  action="/Listas/asignarRelacionCatalogo" id="Form_Listas" class="form-horizontal" method="POST">
+        <div class="row">
+
+          <div class="col-md-6">
+<div class="panel panel-info">
+<div class="panel-heading">
+            <div class="row">
+              <h3 class="text-center">Buscar en VisorUs</h3>
+            </div>
+</div>
+<div class="panel-body">           
+            
+                <div class="input-group col-md-12">
+                  <input type="text" id="inputBuscaBase" name="textobase" class="form-control" placeholder="Buscar producto..." autofocus>
+                  <span class="input-group-btn" onclick="ConsultaBase()">
+                      <a class="btn btn-primary">Buscar
+                      </a>
+                    </span>
+                </div>
+            
+            <br>
+            <div class="form-group row">
+              <div class="col-xs-3">
+                            <label class="input-group" for="GruposBase">Mostrar:</label>
+                            <select class="form-control input-group" id="GruposBase" name="GruposBase" onchange="SubmitGroupBase()">
+                              {{.SGrupo}}
+                            </select>
+              </div> 
+              <div class="col-xs-8">
+                <label for="ex2">Filtros: </label>
+                  <div class="form-group">
+                      <label class="radio-inline"><input type="radio"  class="ProdAsignar" name="filtroBase" value="1"checked>SIN CÓDIGO</label>
+                      <label class="radio-inline"><input type="radio"  class="ProdAsignar" name="filtroBase" value="2">CON CÓDIGO</label>                      
+                      <label class="radio-inline"><input type="radio"  class="ProdAsignar" name="filtroBase" value="3">AMBOS</label>   
+                  </div>
+              </div>
+
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-group">
+                <table class="table table-responsive table-striped table-hover table-condenced table-bordered" id="TablaBase">
+                  <thead id="CabeceraBase">
+                  </thead>
+                  <tbody id="BodyBase">
+                  </tbody>
+                </table>
+              </div>
+
+              
+                  <div  id="PaginacionBase" class="text-center well well-sm"></div>
+             
+
+            </div>
+</div>
+</div>
+           
+          </div>
+
+          <div class="col-md-6">
+
+<div class="panel panel-info">
+<div class="panel-heading">
+            <div class="row">
+              <h3 class="text-center">Buscar en SAT</h3>
+            </div>
+</div>
+<div class="panel-body">  
+
+               
+                  <div class="input-group col-md-12">
+                    <input type="text" id="inputBuscaSat" name="textosat" class="form-control" placeholder="Buscar producto...">
+                    <span class="input-group-btn" onclick="ConsultaSat()">
+                      <a class="btn btn-info" >Buscar</a>
+                    </span>
+                  </div>
+                  <br>
+                  <div class="form-group row">
+                    <div class="col-xs-3">
+                          <label class="input-group" for="GruposSat">Mostrar:</label>
+                          <select class="form-control col-md-2" id="GruposSat" name="GruposSat" onchange="SubmitGroupSat()">
+                            {{.SGrupo}}
+                          </select>
+                    </div>
+                  </div>
+                
+
+            <div class="col-md-12">
+              <div class="form-group">
+                <table class="table table-responsive table-striped table-hover table-condenced table-bordered" id="TablaSat">
+                  <thead id="CabeceraSat">
+                  </thead>
+                  <tbody id="BodySat">
+                  </tbody>
+                </table>
+              </div>
+
+              
+                  <div  id="PaginacionSat" class="text-center well well-sm"></div>
+              
+
+            </div>
+
+</div>
+</div>
+          </div>
+
+        </div>
+
+  <input type="text" id="ID" name="ID" value="{{.ID}}" hidden />   
+  <input type="hidden" id='SkuSeleccionados' name="SkuSeleccionados"></input>
+  <input type="hidden" id='ClaveSatSeleccionado' name="ClaveSatSeleccionado"></input>
+
+        <div class="row">
+          <p class="text-right">
+            <button  class="btn btn-success btn-lg" id="AplicarOperacion" type="submit" onclick="AgregarSkuSeleccionadosAEnviar(); AgregarClaveSeleccionadosAEnviar();">Aplicar Asignación</button>
+          </p>
+        </div>
+</form>
+
+      </div>
+
+    </section>
+</body>
+
+</html>

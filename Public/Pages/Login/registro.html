@@ -1,0 +1,107 @@
+<!--doctype html-->
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>UploadFiles</title>
+
+    <!-- Bootstrap -->
+    <link href="/Plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/formato.css" rel="stylesheet">
+    <!--<link href="../Resources/Plugins/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">-->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="/Plugins//jquery/jquery-3.2.1.min.js"></script>
+    <script src="/js/General/elementos.js"></script>
+</head>
+
+<body>
+    <header>
+        <!--
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+                        aria-controls="navbar">
+                        <span class="sr-only">UploadFiles</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Auxiliar Catalogo</a>
+                </div>
+
+            </div>
+        </nav>
+         -->
+    </header>
+    <section class="container">
+        <section class="container-fluid col-md-4 center">
+            {{if .Error}}
+            <div class="alert alert-danger" role="alert" id="alertas">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button> {{range $_,$elemento := .Error}}
+                <div>{{$elemento.Error}}</div>
+                {{end}}
+            </div>
+            {{end}}
+            <form action="/Registro" method="POST">
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">Registrar nuevo usuario</div>
+                    <div class="panel-body">
+
+                        <input type="hidden" name="Coleccion" value="{{.Usr.Coleccion}}" />
+
+                        <div class="form-group">
+                            <!--<span class="input-group-addon"><label class="glyphicon glyphicon-user"></label></span>-->
+                            <input type="text" name="Usuario" placeholder="Usuario" class="form-control" value="{{.Usr.Usuario}}" autofocus />
+                        </div>
+                        <div class="form-group">
+                            <!--<span class="input-group-addon"><label class="glyphicon glyphicon-font"></label></span>-->
+                            <input type="text" name="Nombre" placeholder="Nombre" class="form-control" value="{{.Usr.Nombre}}" />
+                        </div>
+                        <div class="form-group">
+                            <!--<span class="input-group-addon"><label class="glyphicon glyphicon-list-alt"></label></span>-->
+                            <input type="text" name="Empresa" placeholder="Empresa" class="form-control" value="{{.Usr.Empresa}}" />
+                        </div>
+                        <div class="form-group">
+                            <!--<span class="input-group-addon"><label class="glyphicon glyphicon-envelope"></label></span>-->
+                            <input type="text" name="Correo" placeholder="Correo" class="form-control" value="{{.Usr.Correo}}" />
+                        </div>
+                        <div class="form-group">
+                            <!--<span class="input-group-addon"><label class="glyphicon glyphicon-question-sign"></label></span>-->
+                            <input type="password" name="Password" placeholder="Contrase&ntilde;a" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <!--<span class="input-group-addon"><label class="glyphicon glyphicon-eye-open"></label></span>-->
+                            <input type="password" name="Confirma" placeholder="Confirma Contrase&ntilde;a" class="form-control" />
+                        </div>
+
+                        <div class="clearfix">&nbsp;</div>
+
+                        <a href="/" class="btn btn-default">Cancelar</a>
+                        <button class="btn btn-primary">Confirmar</button>
+
+                    </div>
+                </div>
+
+            </form>
+            <div>
+            </div>
+        </section>
+    </section>
+    <aside></aside>
+    <footer></footer>
+</body>
+
+</html>

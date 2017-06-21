@@ -1,0 +1,35 @@
+{{define "cabecera_ticket"}}
+<header>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+                    aria-controls="navbar">
+            <span class="sr-only">UploadFiles</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+                <a class="navbar-brand" href="/">RelationSHIP SAT 1.0</a>
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/Timer">TicketTimer</a></li>
+                    <!--<li><a href="/Carga">Subir catalogo</a></li>
+                    <li><a href="#" onclick="descargaCatalogo()">Descargar CATALOGO</a><span id='downloadlink'></span></li>
+                    <li><a href="/Eliminar">Eliminar Cuenta</a></li>-->
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/Configuracion"><span class="glyphicon glyphicon-Edit"></span> Configuracion</a></li>
+                    <li><a href="/Salir"><span class="glyphicon glyphicon-user"></span> Salir</a></li>
+                </ul>
+            </div>
+
+            <!--/.nav-collapse -->
+        </div>
+    </nav>
+</header>
+<div id="Loading">
+    <img class="waitgif" alt="Cargando..." src="/img/wait8.gif">
+</div>
+{{end}}
