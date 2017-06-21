@@ -279,6 +279,13 @@ func LimpiarCadena(cadena string) string {
 
 //RFCValido Sirve para reconocer si un RFC es Válido:
 //recibe cadena, regresa true si es un RFC válido, false en otro caso
+func ValidaCadenaExpresion(cadena string, expresion string) bool {
+	re := regexp.MustCompile(expresion)
+	return re.MatchString(cadena)
+}
+
+//RFCValido Sirve para reconocer si un RFC es Válido:
+//recibe cadena, regresa true si es un RFC válido, false en otro caso
 func RFCValido(rfc string) bool {
 	re := regexp.MustCompile("^([a-zA-Z]{3}|[a-zA-Z]{4})\\d{6}[a-zA-Z0-9]{3}$")
 	return re.MatchString(rfc)

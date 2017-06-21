@@ -20,6 +20,8 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     {{template "scripts_ticket"}}
+    <script type="text/javascript" src="/js/Timer/Timer.js"></script>    
+
 
 </head>
 
@@ -54,16 +56,19 @@
                 {{end}} {{end}}
 
                 <div class="clearfix">&nbsp;</div>
-                <form action="/Timer" method="POST">
-                    <div>
-                        <div class="input-group">
-                            <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
-                            <input type="text" class="form-control" id="Entrada">
-                        </div>
+                <form action="/Timer" method="POST" >
+                <input type="text" class="form-control" id="Entrada" name="Entrada">
+
+                    <div class="input-group">
+                        <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
+                        <input type="text" class="form-control" id="Entrada" name="Entrada">
                     </div>
-                    <div class="clearfix">&nbsp;</div>
-                    <button class="btn btn-secondary">Cancelar</button>
-                    <input class="btn btn-primary" type="submit" value="Aceptar" id="AceptarCodigo">
+
+                <div class="clearfix">&nbsp;</div>
+                <button class="btn btn-secondary">Cancelar</button>
+                <!--<button class="btn btn-primary" id="AceptarCodigo"> Aceptar </button>-->
+                <input type="submit" value="Aceptar" id="aceptar" name="aceptar" class="btn btn-primary">
+
                 </form>
                 <div class="clearfix">&nbsp;</div>
             </section>

@@ -43,6 +43,7 @@ func IndexPost(ctx *iris.Context) {
 
 	Usuario := ctx.FormValue("Usuario")
 	Password := ctx.FormValue("Password")
+
 	fmt.Printf("u: %v\np:%v\n", Usuario, Password)
 	Usuario = MoGeneral.LimpiarCadena(Usuario)
 	Password = MoGeneral.LimpiarCadena(Password)
