@@ -125,10 +125,13 @@ func IndexPost(ctx *iris.Context) {
 					reporte.TimeOut = salida
 					minutos := int64(reporte.TimeOut.Sub(reporte.TimeIn).Minutes())
 					reporte.DuracionM = minutos
-					if err = ActualizaTicket(reporte); err != nil {
-						fmt.Printf("Tiempo transcurrido: %v , hora actual: %v", minutos, salida)
-					} else {
+					fmt.Println(reporte)
+					err = ActualizaTicket(reporte)
+					if err != nil {
 						fmt.Println("imposible actualizar")
+					} else {
+
+						fmt.Printf("Tiempo transcurrido: %v minutos, hora actual: %v", minutos, salida)
 					}
 
 				}
@@ -312,7 +315,7 @@ func InsertarTicket(rep Reporte) error {
 func ActualizaTicket(rep Reporte) error {
 	var SesionPsql *sql.Tx
 	var err error
-	query := fmt.Sprintf(`UPDATE public."%v" SET "TimeIn"='%v', "DuracionMinutos"=%v WHERE "CodigoBarraTicket"='%v'`, "REPORTE",
+	query := fmt.Sprintf(`UPDATE public."%v" SET "TimeOut"='%v', "DuracionMinutos"=%v WHERE "CodigoBarraTicket"='%v'`, "REPORTE",
 		rep.TimeOut.Format("2006-01-02 15:04:05 -0700"), rep.DuracionM, rep.CodigoBarraTicket)
 	fmt.Println(query)
 	BasePsql, SesionPsql, err := MoConexion.IniciaSesionEspecificaPsql()
@@ -320,17 +323,21 @@ func ActualizaTicket(rep Reporte) error {
 		fmt.Println("Errores al conectar con postgres: ", err)
 		return err
 	}
+	fmt.Println("1")
+	BasePsql.Exec("set transaction isolation level serializable")
 
 	_, errsql := SesionPsql.Exec(query)
-
+	fmt.Println("2")
 	if errsql != nil {
+		fmt.Println("3")
 		SesionPsql.Rollback()
 		BasePsql.Close()
 		fmt.Println("Error al insertar el Ticket")
 		fmt.Println(query)
 		return err
 	}
+	fmt.Println("4")
 	SesionPsql.Commit()
 	BasePsql.Close()
-	return err
+	return nil
 }

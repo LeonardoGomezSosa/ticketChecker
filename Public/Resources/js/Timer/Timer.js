@@ -1,9 +1,8 @@
 $("document").ready(function () {
-    $("#AceptarCodigo").click(function () {
+    $("#AceptarCodigo").on('click', function (e) {
         entrada = $("#Entrada").val();
         ticket = $("#Ticket").val();
         surtidor = $("#Surtidor").val();
-
 
         var request = $.ajax({
             url: "/Timer",
@@ -27,6 +26,7 @@ $("document").ready(function () {
                 alert("Solo uno de los datos ha sido fijado")
             }
         });
+
     });
 
 });
