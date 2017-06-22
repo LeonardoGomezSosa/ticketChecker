@@ -20,7 +20,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     {{template "scripts_ticket"}}
-    <script type="text/javascript" src="/js/Timer/Timer.js"></script>    
+    <script type="text/javascript" src="/js/Timer/Timer.js"></script>
 
 
 </head>
@@ -30,49 +30,26 @@
     {{template "cabecera_ticket"}}
 
     <section class="container">
-        <section class="container-fluid col-md-4 center">
-            {{if .Error}}
-            <div class="alert alert-danger" role="alert" id="alertas">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button> {{range $_,$elemento := .Error}}
-                <div>{{$elemento.Error}}</div>
-                {{end}}
+        <div class="clearfix">&nbsp;</div>
+        <form  method="POST">
+            <div class="input-group">
+                
+                <input type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket}}">
+                <input type="textAceptarCodigo" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor}}">
+              
             </div>
-            {{end}} {{template "cabecera_ticket"}}
-        </section>
-        <section class="container">
-            <section>
-
-                {{if .}} {{$estado := .SEstado}} {{if $estado }}
-                <div class="alert alert-success">
-                    {{.SMsj}}
-                </div>
-                {{else}}
-                <div class="alert alert-danger">
-                    {{range $_,$elemento := .Error}} {{$elemento.Error}} {{end}}
-                </div>
-
-                {{end}} {{end}}
-
-                <div class="clearfix">&nbsp;</div>
-                <form action="/Timer" method="POST" >
+            <div class="input-group">
+                <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
                 <input type="text" class="form-control" id="Entrada" name="Entrada">
+            </div>
 
-                    <div class="input-group">
-                        <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
-                        <input type="text" class="form-control" id="Entrada" name="Entrada">
-                    </div>
+            <div class="clearfix">&nbsp;</div>
+            <button class="btn btn-secondary">Cancelar</button>
+            <button class="btn btn-primary" id="AceptarCodigo"> Aceptar </button>
+            <!--<input type="submit" value="Aceptar" id="aceptar" name="aceptar" class="btn btn-primary">-->
 
-                <div class="clearfix">&nbsp;</div>
-                <button class="btn btn-secondary">Cancelar</button>
-                <!--<button class="btn btn-primary" id="AceptarCodigo"> Aceptar </button>-->
-                <input type="submit" value="Aceptar" id="aceptar" name="aceptar" class="btn btn-primary">
-
-                </form>
-                <div class="clearfix">&nbsp;</div>
-            </section>
-        </section>
+        </form>
+        <div class="clearfix">&nbsp;</div>
     </section>
 
     <aside></aside>

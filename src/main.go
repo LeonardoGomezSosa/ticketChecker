@@ -9,8 +9,6 @@ import (
 	"./Controladores/Sesiones"
 	"./Controladores/Timer"
 
-	"./Controladores/Registro"
-
 	"./Modulos/Variables"
 
 	iris "gopkg.in/kataras/iris.v6"
@@ -40,15 +38,6 @@ func main() {
 	var DataCfg = MoVar.CargaSeccionCFG(MoVar.SecDefault)
 
 	//###################### Ruteo ####################################
-	//###################### Documento ################################
-	//Index (Búsqueda)
-
-	//Registro
-	app.Get("/Registro", Registro.IndexGet)
-	app.Post("/Registro", Registro.IndexPost)
-
-	//###################### Lista de Base y Sat ################################
-	//Index (Búsqueda)
 
 	app.Get("/", Login.IndexGet)
 	app.Post("/", Login.IndexPost)

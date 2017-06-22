@@ -277,10 +277,10 @@ func LimpiarCadena(cadena string) string {
 	return cadenalimpia
 }
 
-//RFCValido Sirve para reconocer si un RFC es Válido:
-//recibe cadena, regresa true si es un RFC válido, false en otro caso
-func ValidaCadenaExpresion(cadena string, expresion string) bool {
-	re := regexp.MustCompile(expresion)
+//ValidaCadenaExpresion Sirve para reconocer si una cadena valida  :
+//recibe cadena, patron,  regresa true si la cadena coincide con el patron, false en otro caso
+func ValidaCadenaExpresion(cadena string, patron string) bool {
+	re := regexp.MustCompile(patron)
 	return re.MatchString(cadena)
 }
 

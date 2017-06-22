@@ -38,36 +38,27 @@ func IndexPost(ctx *iris.Context) {
 	fmt.Println("Registro.Registro.go: POST")
 	Usuario := ctx.FormValue("Usuario")
 	Nombre := ctx.FormValue("Nombre")
-	Empresa := ctx.FormValue("Empresa")
 	Correo := ctx.FormValue("Correo")
 	Password := ctx.FormValue("Password")
 	Confirma := ctx.FormValue("Confirma")
-	Coleccion := ctx.FormValue("Coleccion")
 
 	fmt.Println("Usuario: ", Usuario)
 	fmt.Println("Nombre:", Nombre)
-	fmt.Println("Empresa:", Empresa)
 	fmt.Println("Correo:", Correo)
 	fmt.Println("Password:", Password)
 	fmt.Println("Confirma:", Confirma)
 
 	Usuario = MoGeneral.LimpiarCadena(Usuario)
 	Nombre = MoGeneral.LimpiarCadena(Nombre)
-	Empresa = MoGeneral.LimpiarCadena(Empresa)
 	Correo = MoGeneral.LimpiarCadena(Correo)
 	Password = MoGeneral.LimpiarCadena(Password)
 	Confirma = MoGeneral.LimpiarCadena(Confirma)
-	Coleccion = MoGeneral.LimpiarCadena(Coleccion)
-	fmt.Println("La coleccion recibida", Coleccion)
 	if MoGeneral.CadenaVacia(Usuario) {
 		VistaRespuesta.Error = append(VistaRespuesta.Error, Errores{Error: "Usuario vacio"})
 	}
 
 	if MoGeneral.CadenaVacia(Nombre) {
 		VistaRespuesta.Error = append(VistaRespuesta.Error, Errores{Error: "Nombre vacio"})
-	}
-	if MoGeneral.CadenaVacia(Empresa) {
-		VistaRespuesta.Error = append(VistaRespuesta.Error, Errores{Error: "Empresa vacio"})
 	}
 	if MoGeneral.CadenaVacia(Correo) {
 		VistaRespuesta.Error = append(VistaRespuesta.Error, Errores{Error: "Correo vacio"})
@@ -87,19 +78,16 @@ func IndexPost(ctx *iris.Context) {
 		VistaRespuesta.Error = append(VistaRespuesta.Error, Errores{Error: "No coincide Password con Confirmaci&oactute;n."})
 	}
 
-	existeUsuario, err := usuario.QueryFieldValueExist(Usuario, "Usuario", "USUARIOS")
-	existeEmpresa, err := usuario.QueryFieldValueExist(Empresa, "Empresa", "USUARIOS")
-	existeCorreo, err := usuario.QueryFieldValueExist(Correo, "Correo", "USUARIOS")
+	existeUsuario, err := usuario.QueryFieldValueExist(Usuario, "Usuario", "ADMINISTRADORES")
+	existeCorreo, err := usuario.QueryFieldValueExist(Correo, "Correo", "ADMINISTRADORES")
 
 	UnicoError := ""
 	var usr usuario.Usuario
 	usr.Usuario = Usuario
 	usr.Nombre = Nombre
-	usr.Empresa = Empresa
 	usr.Correo = Correo
 	usr.Password = Password
-	usr.Coleccion = Coleccion
-	if existeCorreo || existeEmpresa || existeUsuario || err != nil {
+	if existeCorreo || existeUsuario || err != nil {
 		if err != nil {
 			UnicoError = "No se ha podido validar los datos que solicita."
 		} else {
@@ -117,7 +105,7 @@ func IndexPost(ctx *iris.Context) {
 		ctx.Render("Login/registro.html", VistaRespuesta)
 	} else {
 		fmt.Println("Verificar si no hay datos duplicados!!!", usr)
-		if !existeUsuario && !existeEmpresa && !existeCorreo {
+		if !existeUsuario && !existeCorreo {
 			fmt.Println("Intentando insertar...")
 			if VistaRespuesta.Usr.InsertarUsuarioPostgres() {
 				fmt.Println("Insertado!!!", usr)

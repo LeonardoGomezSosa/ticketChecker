@@ -102,19 +102,19 @@ func ValidarUsuario(u string, p string) (bool, *usuario.Usuario) {
 	usr.Correo = u
 	usr.Password = p
 
-	existeUser, err := usuario.QueryFieldValueExist(u, "Usuario", "USUARIOS")
-	existeEmail, err := usuario.QueryFieldValueExist(u, "Correo", "USUARIOS")
+	existeUser, err := usuario.QueryFieldValueExist(u, "Usuario", "ADMINISTRADORES")
+	existeEmail, err := usuario.QueryFieldValueExist(u, "Correo", "ADMINISTRADORES")
 
 	if existeUser || existeEmail {
 		queryS := fmt.Sprintf(`
-	SELECT "Usuario", "Nombre", "Empresa", "Correo", "Coleccion", COUNT(*) as "Coincidencias" FROM public."USUARIOS" WHERE
-	("Usuario"='%v' OR "Correo"= '%v') AND  "Password"='%v' GROUP BY "Usuario"
+	SELECT "Usuario", "Nombre",  "Correo", COUNT(*) as "Coincidencias" FROM public."ADMINISTRADORES" 
+	WHERE ("Usuario"='%v' OR "Correo"= '%v') AND  "Password"='%v' GROUP BY "Usuario"
 	`, u, u, p)
 
 		fmt.Println(queryS)
 		var Coincidencias int64
 		row := ptrDB.QueryRow(queryS)
-		err = row.Scan(&usr.Usuario, &usr.Nombre, &usr.Empresa, &usr.Correo, &usr.Coleccion,
+		err = row.Scan(&usr.Usuario, &usr.Nombre, &usr.Correo,
 			&Coincidencias)
 
 		if err != nil {

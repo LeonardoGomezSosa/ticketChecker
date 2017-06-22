@@ -1,12 +1,15 @@
 $("document").ready(function () {
-    $("#AceptarCodigo").click(function () {
-        x =  $("#Entrada").val()
-        console.log("Entrada: " + x);
+    $("#aceptar").click(function () {
+        entrada = $("#Entrada").val();
+        ticket = $("#Ticket").val();
+        surtidor = $("#Surtidor").val();
+
+
         var request = $.ajax({
             url: "/Timer",
             method: "POST",
             async: false,
-            data: { Entrada: x },
+            data: { Entrada: entrada, Ticket: ticket, Surtidor: surtidor },
             dataType: "html",
         });
         request.done(function (data) {
@@ -16,11 +19,11 @@ $("document").ready(function () {
             $("body").html(data);
         });
         request.always(function () {
-            alert("Fue y volvio")
+            console.log("Fue y volvio");
+            console.log("Entrada: " + entrada);
+            console.log("Ticket: " + ticket);
+            console.log("Surtidor: " + surtidor);
         });
+    });
 
-    });
-    $("#AceptarCodigo").keypress(function(){
-        
-    });
 });
