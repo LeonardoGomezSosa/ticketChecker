@@ -1,5 +1,5 @@
 $("document").ready(function () {
-    $("#aceptar").click(function () {
+    $("#AceptarCodigo").click(function () {
         entrada = $("#Entrada").val();
         ticket = $("#Ticket").val();
         surtidor = $("#Surtidor").val();
@@ -19,10 +19,13 @@ $("document").ready(function () {
             $("body").html(data);
         });
         request.always(function () {
-            console.log("Fue y volvio");
-            console.log("Entrada: " + entrada);
-            console.log("Ticket: " + ticket);
-            console.log("Surtidor: " + surtidor);
+            entrada = $("#Entrada").val();
+            ticket = $("#Ticket").val();
+            surtidor = $("#Surtidor").val();
+            if (ticket !== "" && surtidor === "" || ticket === "" && surtidor !== "") {
+                console.log("Solo uno de los datos ha sido fijado")
+                alert("Solo uno de los datos ha sido fijado")
+            }
         });
     });
 
