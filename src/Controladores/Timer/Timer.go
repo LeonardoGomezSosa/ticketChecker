@@ -121,7 +121,16 @@ func IndexPost(ctx *iris.Context) {
 					rep.CodigoBarraSurtidor = ""
 					rep.CodigoBarraTicket = rep.CodigoBarraSurtidor
 					fmt.Println("InsertarSalida")
-					fmt.Printf("Tiempo transcurrido: %v , hora actual: %v", time.Now().Sub(reporte.TimeIn).Minutes(), time.Now())
+					salida := time.Now()
+					reporte.TimeOut = salida
+					minutos := int64(reporte.TimeOut.Sub(reporte.TimeIn).Minutes())
+					reporte.DuracionM = minutos
+					if err = ActualizaTicket(reporte); err != nil {
+						fmt.Printf("Tiempo transcurrido: %v , hora actual: %v", minutos, salida)
+					} else {
+						fmt.Println("imposible actualizar")
+					}
+
 				}
 
 			} else {
@@ -303,15 +312,17 @@ func InsertarTicket(rep Reporte) error {
 func ActualizaTicket(rep Reporte) error {
 	var SesionPsql *sql.Tx
 	var err error
+	query := fmt.Sprintf(`UPDATE public."%v" SET "TimeIn"='%v', "DuracionMinutos"=%v WHERE "CodigoBarraTicket"='%v'`, "REPORTE",
+		rep.TimeOut.Format("2006-01-02 15:04:05 -0700"), rep.DuracionM, rep.CodigoBarraTicket)
+	fmt.Println(query)
 	BasePsql, SesionPsql, err := MoConexion.IniciaSesionEspecificaPsql()
 	if err != nil {
 		fmt.Println("Errores al conectar con postgres: ", err)
 		return err
 	}
-	BasePsql.Exec("set transaction isolation level serializable")
-	query := fmt.Sprintf(`UPDATE public."%v" SET "TimeIn"='%v', DuracionMinutos='%v' WHERE "CodigoBarraTicket"='%v'`, "REPORTE",
-		rep.TimeOut, rep.DuracionM, rep.CodigoBarraTicket)
+
 	_, errsql := SesionPsql.Exec(query)
+
 	if errsql != nil {
 		SesionPsql.Rollback()
 		BasePsql.Close()
