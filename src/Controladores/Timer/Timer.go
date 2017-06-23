@@ -113,7 +113,6 @@ func IndexPost(ctx *iris.Context) {
 			}
 			if existeEnReporte {
 				fmt.Println("La matrola existe")
-				fmt.Println(reporte)
 				if reporte.TimeIn.Before(reporte.TimeOut) {
 					fmt.Println("Ya se ha cerrado el Ticket")
 					rep.CodigoBarraSurtidor = ""
@@ -144,20 +143,22 @@ func IndexPost(ctx *iris.Context) {
 					existeSurtidor, surt, err := Surtidor.QuerySurtidorExist(rep.CodigoBarraSurtidor, "CodigoBarra", "SURTIDORES")
 					if err != nil {
 						fmt.Println("Error al buscar Surtidor: ", err)
-					}
-					if existeSurtidor {
-						rep.TimeIn = time.Now()
-						rep.TimeOut = rep.TimeIn
-						rep.CodigoBarraSurtidor = surt.CodigoBarra
-						rep.DuracionM = 0
-						err = InsertarTicket(rep)
-						if err != nil {
-							fmt.Println(err)
-						} else {
-							fmt.Println("No ha sido posible insertar, vuelva a intentar")
-						}
 					} else {
-						fmt.Println("El surtidor no existe.")
+						if existeSurtidor {
+							rep.TimeIn = time.Now()
+							rep.TimeOut = rep.TimeIn
+							rep.CodigoBarraSurtidor = surt.CodigoBarra
+							rep.DuracionM = 0
+							err = InsertarTicket(rep)
+							if err != nil {
+								fmt.Println(err)
+								fmt.Println("No ha sido posible insertar, vuelva a intentar")
+							} else {
+								fmt.Println("Ha sido posible insertar")
+							}
+						} else {
+							fmt.Println("El surtidor no existe.")
+						}
 					}
 					fmt.Println("Se forza el reinicio de la captura.")
 					rep.CodigoBarraTicket = ""

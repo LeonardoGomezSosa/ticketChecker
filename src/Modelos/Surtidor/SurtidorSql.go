@@ -34,7 +34,7 @@ func QuerySurtidorExist(value string, field string, table string) (bool, Surtido
 	fmt.Println("Existencia: ", existencia)
 	if existencia == 0 {
 		fmt.Printf("No se encuentra  elemento que contenga  (Campo:%v, Valor: %v) en %v\n", field, value, table)
-		return false, usr, err
+		return false, usr, nil
 	}
 
 	stmt = fmt.Sprintf(`SELECT "Surtidor","Correo", "Password"  FROM public."%v" where "%v"='%v'`, table, field, value)
