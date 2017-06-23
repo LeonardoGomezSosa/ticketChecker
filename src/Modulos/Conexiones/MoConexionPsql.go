@@ -43,8 +43,7 @@ func InsertaOActualizaRelacion(tabla, sku, descripcion, claveSat string) error {
 		return err
 	}
 	BasePsql.Exec("set transaction isolation level serializable")
-	//Query := fmt.Sprintf(`INSERT INTO public."Kardex_%v" VALUES('%v','%v','%v',%v,%v,%v,%v,%v,'%v',%v,'%v')`, idAlmacen.Hex(), p.IDOperacion, p.IDMovimiento, p.IDProducto, p.Cantidad, p.Costo, p.Precio, p.ImpuestoTotal, p.DescuentoTotal, p.TipoOperacion, nuevaExistencia, time.Now().Format(time.RFC3339))
-	//Query := `SELECT "Sku" FROM "CatalogoFinal" WHERE "Sku"='` + sku + `'`
+
 	Query := fmt.Sprintf(`SELECT "Sku" FROM "%v"  WHERE "Sku" ='%v'`, tabla, sku)
 	Elemento, err := BasePsql.Query(Query)
 	if err != nil {

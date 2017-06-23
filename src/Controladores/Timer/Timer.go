@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"../../Modelos/ExpresionesRegulares"
+	"../../Modelos/Surtidor"
 	"../../Modulos/Conexiones"
 	"../../Modulos/General"
 	"../Sesiones"
@@ -116,10 +117,8 @@ func IndexPost(ctx *iris.Context) {
 				if reporte.TimeIn.Before(reporte.TimeOut) {
 					fmt.Println("Ya se ha cerrado el Ticket")
 					rep.CodigoBarraSurtidor = ""
-					rep.CodigoBarraTicket = rep.CodigoBarraSurtidor
+					rep.CodigoBarraTicket = ""
 				} else {
-					rep.CodigoBarraSurtidor = ""
-					rep.CodigoBarraTicket = rep.CodigoBarraSurtidor
 					fmt.Println("InsertarSalida")
 					salida := time.Now()
 					reporte.TimeOut = salida
@@ -133,22 +132,34 @@ func IndexPost(ctx *iris.Context) {
 
 						fmt.Printf("Tiempo transcurrido: %v minutos, hora actual: %v", minutos, salida)
 					}
-
+					rep.CodigoBarraSurtidor = ""
+					rep.CodigoBarraTicket = ""
 				}
-
 			} else {
 				fmt.Println("La matrola no existe.")
 				if rep.CodigoBarraSurtidor == "" {
 					fmt.Println("No hacer nada hasta que tengas Surtidor.")
 				} else {
 					fmt.Println("Registrar timein, ticket y surtidor.")
-					rep.TimeIn = time.Now()
-					rep.TimeOut = rep.TimeIn
-					rep.DuracionM = 0
-					err := InsertarTicket(rep)
+					existeSurtidor, surt, err := Surtidor.QuerySurtidorExist(rep.CodigoBarraSurtidor, "CodigoBarra", "SURTIDORES")
 					if err != nil {
-						fmt.Println(err)
+						fmt.Println("Error al buscar Surtidor: ", err)
 					}
+					if existeSurtidor {
+						rep.TimeIn = time.Now()
+						rep.TimeOut = rep.TimeIn
+						rep.CodigoBarraSurtidor = surt.CodigoBarra
+						rep.DuracionM = 0
+						err = InsertarTicket(rep)
+						if err != nil {
+							fmt.Println(err)
+						} else {
+							fmt.Println("No ha sido posible insertar, vuelva a intentar")
+						}
+					} else {
+						fmt.Println("El surtidor no existe.")
+					}
+					fmt.Println("Se forza el reinicio de la captura.")
 					rep.CodigoBarraTicket = ""
 					rep.CodigoBarraSurtidor = ""
 				}
