@@ -169,19 +169,38 @@ func IndexPost(ctx *iris.Context) {
 			break
 		case "Surtidor":
 			rep.CodigoBarraSurtidor = Entrada
-			existeSurtidor := true
-			fmt.Println("Verifica existencia de surtidor en SURTIDURES.")
-
+			existeSurtidor, surt, err := Surtidor.QuerySurtidorExist(rep.CodigoBarraSurtidor, "CodigoBarra", "SURTIDORES")
+			if err != nil {
+				fmt.Println("Error al buscar Surtidor: ", err)
+			}
 			if existeSurtidor {
 				fmt.Println("Comprobar si tienes un ticket.")
 				if rep.CodigoBarraTicket != "" {
 					existeEnReporte, reporte, err := ConsultarTicketExisteYRegresarContenidoPorCampo(Entrada, "CodigoBarraTicket", "REPORTE")
 					if err != nil {
 						if existeEnReporte {
-							fmt.Println("verificar que no este cerrado.")
-							fmt.Println(reporte)
-							// if !cerrado { cerrarlo }
-							// else { no hacer nada }
+							fmt.Println("La matrola existe")
+							if reporte.TimeIn.Before(reporte.TimeOut) {
+								fmt.Println("Ya se ha cerrado el Ticket")
+								rep.CodigoBarraSurtidor = ""
+								rep.CodigoBarraTicket = ""
+							} else {
+								fmt.Println("InsertarSalida")
+								salida := time.Now()
+								reporte.TimeOut = salida
+								minutos := int64(reporte.TimeOut.Sub(reporte.TimeIn).Minutes())
+								reporte.DuracionM = minutos
+								fmt.Println(reporte)
+								err = ActualizaTicket(reporte)
+								if err != nil {
+									fmt.Println("imposible actualizar")
+								} else {
+
+									fmt.Printf("Tiempo transcurrido: %v minutos, hora actual: %v", minutos, salida)
+								}
+								rep.CodigoBarraSurtidor = ""
+								rep.CodigoBarraTicket = ""
+							}
 						} else {
 							fmt.Println("La matrola no existe.")
 							if rep.CodigoBarraSurtidor == "" {
@@ -191,6 +210,7 @@ func IndexPost(ctx *iris.Context) {
 								rep.TimeIn = time.Now()
 								rep.TimeOut = rep.TimeIn
 								rep.DuracionM = 0
+								rep.CodigoBarraSurtidor = surt.CodigoBarra
 								err := InsertarTicket(rep)
 								if err != nil {
 									fmt.Println(err)

@@ -130,31 +130,6 @@ func (me *Surtidor) InsertarSurtidorPostgres() bool {
 
 }
 
-// // EliminarSurtidor funcion que elimina un Surtidor en la tabla SURTIDORES
-// func (me *Surtidor) EliminarSurtidor() bool {
-// 	ptrDB, err := MoConexion.ConexionPsql()
-// 	if me.Surtidor == "" {
-// 		fmt.Println("No se proporciono Surtidor ")
-// 		return false
-// 	}
-// 	if err != nil {
-// 		ptrDB.Close()
-// 		fmt.Println("No se ha podido establecer conexión: ", err)
-// 		return false
-// 	}
-
-// 	fmt.Println("# Existe al menos uno")
-// 	fmt.Println("# crear stmt")
-// 	stmt := fmt.Sprintf(`DELETE FROM public."SURTIDORES" WHERE "Surtidor"='%v'`, me.Surtidor)
-// 	row := ptrDB.QueryRow(stmt)
-
-// 	fmt.Println(row)
-
-// 	ptrDB.Close()
-// 	return true
-
-// }
-
 // ActualizaNombreSurtidor funcion que inserta un Surtidor en la tabla SURTIDORES
 func (me *Surtidor) ActualizaNombreSurtidor(Nombre string) bool {
 	ptrDB, err := MoConexion.ConexionPsql()
