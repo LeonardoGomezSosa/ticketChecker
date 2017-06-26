@@ -22,6 +22,7 @@ type Reporte struct {
 	TimeIn              time.Time
 	TimeOut             time.Time
 	DuracionM           int64
+	SurtidoCompleto     string
 }
 
 type ReporteVista struct {
@@ -30,6 +31,7 @@ type ReporteVista struct {
 	TimeIn              TimeInVista
 	TimeOut             TimeOutVista
 	DuracionM           DuracionMVista
+	SurtidoCompleto     SurtidoCompletoVista
 	Timer               bool
 }
 
@@ -58,6 +60,11 @@ type DuracionMVista struct {
 	DuracionM int64 //Valor
 	Error     string
 	Estado    bool
+}
+type SurtidoCompletoVista struct {
+	SurtidoCompleto string //Valor
+	Error           string
+	Estado          bool
 }
 
 //IndexGet renderea al indObtenerExpresionesAlmacenadasex de Almacen
