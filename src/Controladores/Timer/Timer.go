@@ -65,7 +65,7 @@ func IndexGet(ctx *iris.Context) {
 	if sessionUtils.IsStarted(ctx) {
 		ctx.Render("Timer/Timer.html", nil)
 	} else {
-		ctx.Redirect("/Login", 301)
+		ctx.Redirect("/", 301)
 	}
 
 }
@@ -126,25 +126,26 @@ func IndexPost(ctx *iris.Context) {
 					fmt.Println(reporte)
 					err = ActualizaTicket(reporte)
 					if err != nil {
-						fmt.Println("imposible actualizar")
+						fmt.Println("Imposible actualizar de ticket leido con entrada ticket.")
 					} else {
-
 						fmt.Printf("Tiempo transcurrido: %v minutos, hora actual: %v", minutos, salida)
 					}
 					rep.CodigoBarraSurtidor = ""
 					rep.CodigoBarraTicket = ""
 				}
 			} else {
-				fmt.Println("La matrola no existe.")
+				fmt.Println("Dentro de ticket esta en la opcionde alta.")
 				if rep.CodigoBarraSurtidor == "" {
 					fmt.Println("No hacer nada hasta que tengas Surtidor.")
 				} else {
-					fmt.Println("Registrar timein, ticket y surtidor.")
+					fmt.Println("Se tiene previamente un surtidor, valida si existe.")
 					existeSurtidor, surt, err := Surtidor.QuerySurtidorExist(rep.CodigoBarraSurtidor, "CodigoBarra", "SURTIDORES")
 					if err != nil {
 						fmt.Println("Error al buscar Surtidor: ", err)
 					} else {
 						if existeSurtidor {
+							fmt.Println("Si el surtidor existe:")
+
 							rep.TimeIn = time.Now()
 							rep.TimeOut = rep.TimeIn
 							rep.CodigoBarraSurtidor = surt.CodigoBarra
@@ -169,6 +170,7 @@ func IndexPost(ctx *iris.Context) {
 			break
 		case "Surtidor":
 			rep.CodigoBarraSurtidor = Entrada
+			existeSurtidor := false
 			existeSurtidor, surt, err := Surtidor.QuerySurtidorExist(rep.CodigoBarraSurtidor, "CodigoBarra", "SURTIDORES")
 			if err != nil {
 				fmt.Println("Error al buscar Surtidor: ", err)
@@ -176,8 +178,8 @@ func IndexPost(ctx *iris.Context) {
 			if existeSurtidor {
 				fmt.Println("Comprobar si tienes un ticket.")
 				if rep.CodigoBarraTicket != "" {
-					existeEnReporte, reporte, err := ConsultarTicketExisteYRegresarContenidoPorCampo(Entrada, "CodigoBarraTicket", "REPORTE")
-					if err != nil {
+					existeEnReporte, reporte, err := ConsultarTicketExisteYRegresarContenidoPorCampo(rep.CodigoBarraTicket, "CodigoBarraTicket", "REPORTE")
+					if err == nil {
 						if existeEnReporte {
 							fmt.Println("La matrola existe")
 							if reporte.TimeIn.Before(reporte.TimeOut) {
@@ -219,11 +221,14 @@ func IndexPost(ctx *iris.Context) {
 								rep.CodigoBarraSurtidor = ""
 							}
 						}
+					} else {
+						fmt.Println("Error al consultar ticket: ", err)
+						rep.CodigoBarraTicket = ""
+						rep.CodigoBarraSurtidor = ""
 					}
 				} else {
 					fmt.Println("No hacer nada hasta recibir alguna entrada valida.")
 				}
-
 			} else {
 				fmt.Println("No existe el surtidor en la bd.")
 			}
@@ -294,7 +299,7 @@ func ConsultarTicketExisteYRegresarContenidoPorCampo(value string, field string,
 	if existencia == 0 {
 		fmt.Printf("No se encuentra  elemento que contenga  (Campo:%v, Valor: %v) en %v\n", field, value, table)
 		ptrDB.Close()
-		return false, rep, err
+		return false, rep, nil
 	}
 
 	stmt = fmt.Sprintf(`
@@ -304,7 +309,6 @@ func ConsultarTicketExisteYRegresarContenidoPorCampo(value string, field string,
 	LIMIT 1
 	`,
 		table, field, value)
-	fmt.Println(rep)
 
 	row = ptrDB.QueryRow(stmt)
 	err = row.Scan(&rep.CodigoBarraTicket, &rep.CodigoBarraSurtidor, &rep.TimeIn, &rep.TimeOut, &rep.DuracionM)
@@ -329,7 +333,10 @@ func InsertarTicket(rep Reporte) error {
 	}
 	BasePsql.Exec("set transaction isolation level serializable")
 	query := fmt.Sprintf(`INSERT INTO public."%v" VALUES('%v','%v','%v','%v','%v')`, "REPORTE",
-		rep.CodigoBarraTicket, rep.CodigoBarraSurtidor, rep.TimeIn, rep.TimeIn, rep.DuracionM)
+		rep.CodigoBarraTicket, rep.CodigoBarraSurtidor,
+		rep.TimeIn.Format("2006-01-02 15:04:05 -0700"),
+		rep.TimeIn.Format("2006-01-02 15:04:05 -0700"),
+		rep.DuracionM)
 	_, errsql := SesionPsql.Exec(query)
 	if errsql != nil {
 		SesionPsql.Rollback()

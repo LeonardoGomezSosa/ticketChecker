@@ -37,7 +37,7 @@ func QuerySurtidorExist(value string, field string, table string) (bool, Surtido
 		return false, usr, nil
 	}
 
-	stmt = fmt.Sprintf(`SELECT "Surtidor","Correo", "Password"  FROM public."%v" where "%v"='%v'`, table, field, value)
+	stmt = fmt.Sprintf(`SELECT "Usuario", "CodigoBarra" FROM public."%v" where "%v"='%v'`, table, field, value)
 	row = ptrDB.QueryRow(stmt)
 
 	err = row.Scan(&usr.Surtidor, &usr.CodigoBarra)
