@@ -30,6 +30,7 @@ type ReporteVista struct {
 	TimeIn              TimeInVista
 	TimeOut             TimeOutVista
 	DuracionM           DuracionMVista
+	Timer               bool
 }
 
 type CodigoBarraTicketVista struct {
