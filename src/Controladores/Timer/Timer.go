@@ -80,12 +80,9 @@ func IndexPost(ctx *iris.Context) {
 		fmt.Println("Error: ", err)
 	}
 
-	// err = ctx.Request.ParseForm()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
 	rep.CodigoBarraTicket = ctx.FormValue("Ticket")
 	rep.CodigoBarraSurtidor = ctx.FormValue("Surtidor")
+
 	Entrada := ctx.FormValue("Entrada")
 
 	fmt.Println("Entrada: ", rep)
@@ -109,6 +106,9 @@ func IndexPost(ctx *iris.Context) {
 		case "ticket":
 			existeEnReporte, reporte, err := ConsultarTicketExisteYRegresarContenidoPorCampo(Entrada, "CodigoBarraTicket", "REPORTE")
 			rep.CodigoBarraTicket = Entrada
+			if (rep.CodigoBarraTicket != "" && rep.CodigoBarraSurtidor == "") || (rep.CodigoBarraTicket == "" && rep.CodigoBarraSurtidor != "") {
+				fmt.Println("Falta 1.")
+			}
 			if err != nil {
 				fmt.Println("Error: ", err)
 			}
@@ -173,6 +173,9 @@ func IndexPost(ctx *iris.Context) {
 			rep.CodigoBarraSurtidor = Entrada
 			existeSurtidor := false
 			existeSurtidor, surt, err := Surtidor.QuerySurtidorExist(rep.CodigoBarraSurtidor, "CodigoBarra", "SURTIDORES")
+			if (rep.CodigoBarraTicket != "" && rep.CodigoBarraSurtidor == "") || (rep.CodigoBarraTicket == "" && rep.CodigoBarraSurtidor != "") {
+				fmt.Println("Falta 1.")
+			}
 			if err != nil {
 				fmt.Println("Error al buscar Surtidor: ", err)
 			}
