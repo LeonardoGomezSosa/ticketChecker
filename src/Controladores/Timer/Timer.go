@@ -15,6 +15,60 @@ import (
 
 var exp []ExpresionesRegulares.ExpresionRegular
 
+<<<<<<< HEAD
+=======
+type Reporte struct {
+	CodigoBarraTicket   string
+	CodigoBarraSurtidor string
+	TimeIn              time.Time
+	TimeOut             time.Time
+	DuracionM           int64
+	SurtidoCompleto     string
+}
+
+type ReporteVista struct {
+	CodigoBarraTicket   CodigoBarraTicketVista
+	CodigoBarraSurtidor CodigoBarraSurtidorVista
+	TimeIn              TimeInVista
+	TimeOut             TimeOutVista
+	DuracionM           DuracionMVista
+	SurtidoCompleto     SurtidoCompletoVista
+	Timer               bool
+}
+
+type CodigoBarraTicketVista struct {
+	CodigoBarraSurtidor string //Valor
+	Error               string
+	Estado              bool
+}
+
+type CodigoBarraSurtidorVista struct {
+	CodigoBarraSurtidor string //Valor
+	Error               string
+	Estado              bool
+}
+type TimeInVista struct {
+	TimeIn time.Time //Valor
+	Error  string
+	Estado bool
+}
+type TimeOutVista struct {
+	TimeOut time.Time //Valor
+	Error   string
+	Estado  bool
+}
+type DuracionMVista struct {
+	DuracionM int64 //Valor
+	Error     string
+	Estado    bool
+}
+type SurtidoCompletoVista struct {
+	SurtidoCompleto string //Valor
+	Error           string
+	Estado          bool
+}
+
+>>>>>>> 4801584225d5814b981d543ce787347dcd7bf76d
 //IndexGet renderea al indObtenerExpresionesAlmacenadasex de Almacen
 func IndexGet(ctx *iris.Context) {
 	fmt.Println("Timer.Timer.go: GET")
@@ -35,12 +89,9 @@ func IndexPost(ctx *iris.Context) {
 		fmt.Println("Error: ", err)
 	}
 
-	// err = ctx.Request.ParseForm()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
 	rep.CodigoBarraTicket = ctx.FormValue("Ticket")
 	rep.CodigoBarraSurtidor = ctx.FormValue("Surtidor")
+
 	Entrada := ctx.FormValue("Entrada")
 
 	fmt.Println("Entrada: ", rep)
@@ -64,6 +115,9 @@ func IndexPost(ctx *iris.Context) {
 		case "ticket":
 			existeEnReporte, report, err := reporte.ConsultarTicketExisteYRegresarContenidoPorCampo(Entrada, "CodigoBarraTicket", "REPORTE")
 			rep.CodigoBarraTicket = Entrada
+			if (rep.CodigoBarraTicket != "" && rep.CodigoBarraSurtidor == "") || (rep.CodigoBarraTicket == "" && rep.CodigoBarraSurtidor != "") {
+				fmt.Println("Falta 1.")
+			}
 			if err != nil {
 				fmt.Println("Error: ", err)
 			}
@@ -128,6 +182,9 @@ func IndexPost(ctx *iris.Context) {
 			rep.CodigoBarraSurtidor = Entrada
 			existeSurtidor := false
 			existeSurtidor, surt, err := Surtidor.QuerySurtidorExist(rep.CodigoBarraSurtidor, "CodigoBarra", "SURTIDORES")
+			if (rep.CodigoBarraTicket != "" && rep.CodigoBarraSurtidor == "") || (rep.CodigoBarraTicket == "" && rep.CodigoBarraSurtidor != "") {
+				fmt.Println("Falta 1.")
+			}
 			if err != nil {
 				fmt.Println("Error al buscar Surtidor: ", err)
 			}
