@@ -15,60 +15,6 @@ import (
 
 var exp []ExpresionesRegulares.ExpresionRegular
 
-<<<<<<< HEAD
-=======
-type Reporte struct {
-	CodigoBarraTicket   string
-	CodigoBarraSurtidor string
-	TimeIn              time.Time
-	TimeOut             time.Time
-	DuracionM           int64
-	SurtidoCompleto     string
-}
-
-type ReporteVista struct {
-	CodigoBarraTicket   CodigoBarraTicketVista
-	CodigoBarraSurtidor CodigoBarraSurtidorVista
-	TimeIn              TimeInVista
-	TimeOut             TimeOutVista
-	DuracionM           DuracionMVista
-	SurtidoCompleto     SurtidoCompletoVista
-	Timer               bool
-}
-
-type CodigoBarraTicketVista struct {
-	CodigoBarraSurtidor string //Valor
-	Error               string
-	Estado              bool
-}
-
-type CodigoBarraSurtidorVista struct {
-	CodigoBarraSurtidor string //Valor
-	Error               string
-	Estado              bool
-}
-type TimeInVista struct {
-	TimeIn time.Time //Valor
-	Error  string
-	Estado bool
-}
-type TimeOutVista struct {
-	TimeOut time.Time //Valor
-	Error   string
-	Estado  bool
-}
-type DuracionMVista struct {
-	DuracionM int64 //Valor
-	Error     string
-	Estado    bool
-}
-type SurtidoCompletoVista struct {
-	SurtidoCompleto string //Valor
-	Error           string
-	Estado          bool
-}
-
->>>>>>> 4801584225d5814b981d543ce787347dcd7bf76d
 //IndexGet renderea al indObtenerExpresionesAlmacenadasex de Almacen
 func IndexGet(ctx *iris.Context) {
 	fmt.Println("Timer.Timer.go: GET")
