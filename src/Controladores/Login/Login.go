@@ -96,8 +96,6 @@ func ValidarUsuario(u string, p string) (bool, *usuario.Usuario) {
 	}
 	defer ptrDB.Close()
 
-	fmt.Println("# Querying")
-
 	usr.Usuario = u
 	usr.Correo = u
 	usr.Password = p

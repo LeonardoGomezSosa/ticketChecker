@@ -30,26 +30,38 @@
     {{template "cabecera_ticket"}}
 
     <section class="container">
-        <div class="clearfix">&nbsp;</div>
-        <form method="POST">
-            <div class="input-group">
-                
-                <input type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket}}">
-                <input type="textAceptarCodigo" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor}}">
-              
-            </div>
-            <div class="input-group">
-                <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
-                <input type="text" class="form-control" id="Entrada" name="Entrada">
+
+        {{$estado := .Estado}} 
+        {{.Estado}} 
+        <label for="Estado">Estado: </label><input type="text" name="Estado" value="{{.Estado}}" placeholder="Estado">
+        {{if $estado}}
+            <div class="alert alert-dismissable fade in alert-info" id="TimerDiv">
+        {{else}}
+             <div class="alert alert-dismissable fade in alert-danger" id="TimerDiv">
+        {{end}}
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{.Mensaje}}
             </div>
 
             <div class="clearfix">&nbsp;</div>
-            <button class="btn btn-secondary">Cancelar</button>
-            <button class="btn btn-primary" id="AceptarCodigo"> Aceptar </button>
-            <!--<input type="submit" value="Aceptar" id="aceptar" name="aceptar" class="btn btn-primary">-->
+            <form method="POST">
+                <div class="input-group">
 
-        </form>
-        <div class="clearfix">&nbsp;</div>
+                    <input type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}">
+                    <input type="textAceptarCodigo" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}">
+
+                </div>
+                <div class="input-group">
+                    <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
+                    <input type="text" class="form-control" id="Entrada" name="Entrada">
+                </div>
+
+                <div class="clearfix">&nbsp;</div>
+                <button class="btn btn-secondary">Cancelar</button>
+                <button class="btn btn-primary" id="AceptarCodigo"> Aceptar </button>
+                <!--<input type="submit" value="Aceptar" id="aceptar" name="aceptar" class="btn btn-primary">-->
+
+            </form>
+            <div class="clearfix">&nbsp;</div>
     </section>
 
     <aside></aside>

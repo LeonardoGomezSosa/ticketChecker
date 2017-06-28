@@ -1,6 +1,13 @@
 package reporte
 
-import "time"
+import (
+	"database/sql"
+	"fmt"
+	"time"
+
+	"../../Modulos/Conexiones"
+	_ "github.com/lib/pq"
+)
 
 // Reporte Estructura para almacenar y leer datos de la tabla reporte de postgres
 type Reporte struct {
@@ -19,9 +26,7 @@ func ConsultarTicketExiste(value string, field string, table string) (bool, erro
 		return false, err
 	}
 
-	fmt.Println("# Querying")
 	stmt := fmt.Sprintf(`SELECT count(*)  FROM public."%v" where "%v"='%v'`, table, field, value)
-	fmt.Println(stmt)
 	row := ptrDB.QueryRow(stmt)
 
 	var existencia int64
@@ -52,7 +57,6 @@ func ConsultarTicketExisteYRegresarContenidoPorCampo(value string, field string,
 		return false, rep, err
 	}
 	stmt := fmt.Sprintf(`SELECT count(*)  FROM public."%v" where "%v"='%v'`, table, field, value)
-	fmt.Println(stmt)
 	row := ptrDB.QueryRow(stmt)
 	var existencia int64
 	err = row.Scan(&existencia)

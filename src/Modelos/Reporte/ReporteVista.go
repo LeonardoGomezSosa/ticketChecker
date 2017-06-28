@@ -9,6 +9,7 @@ type ReporteVista struct {
 	TimeIn              TimeInVista
 	TimeOut             TimeOutVista
 	DuracionM           DuracionMVista
+	Estado              bool
 	Error               string
 	Mensaje             string
 	Timer               bool
@@ -16,10 +17,10 @@ type ReporteVista struct {
 
 // CodigoBarraTicketVista estructura que representa el miembro "" de la estructura reporte en la vista.
 type CodigoBarraTicketVista struct {
-	CodigoBarraSurtidor string //Valor
-	Error               string
-	Mensaje             string
-	Estado              bool
+	CodigoBarraTicket string //Valor
+	Error             string
+	Mensaje           string
+	Estado            bool
 }
 
 // CodigoBarraSurtidorVista estructura que representa el miembro "" de la estructura reporte en la vista.

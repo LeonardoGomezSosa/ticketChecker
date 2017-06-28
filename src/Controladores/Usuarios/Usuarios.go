@@ -17,7 +17,6 @@ func QueryFieldValueExist(value string, field string, table string) (bool, error
 		return false, err
 	}
 
-	fmt.Println("# Querying")
 	stmt := fmt.Sprintf(`SELECT count(*)  FROM public."%v" where "%v"='%v'`, table, field, value)
 	row := ptrDB.QueryRow(stmt)
 

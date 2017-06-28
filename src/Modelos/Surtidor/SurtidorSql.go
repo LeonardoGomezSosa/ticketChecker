@@ -23,15 +23,11 @@ func QuerySurtidorExist(value string, field string, table string) (bool, Surtido
 		return false, usr, err
 	}
 
-	fmt.Println("# Existe al menos uno")
-	fmt.Println("# crear stmt")
 	stmt := fmt.Sprintf(`SELECT count(*)  FROM public."%v" where "%v"='%v'`, table, field, value)
-	fmt.Println("#  stmt: ", stmt)
 
 	row := ptrDB.QueryRow(stmt)
 	var existencia int64
 	err = row.Scan(&existencia)
-	fmt.Println("Existencia: ", existencia)
 	if existencia == 0 {
 		fmt.Printf("No se encuentra  elemento que contenga  (Campo:%v, Valor: %v) en %v\n", field, value, table)
 		return false, usr, nil
@@ -62,10 +58,8 @@ func QueryFieldValueExist(value string, field string, table string) (bool, error
 		return false, err
 	}
 
-	fmt.Println("# Querying")
 	stmt := fmt.Sprintf(`SELECT count(*)  FROM public."%v" where "%v"='%v'`, table, field, value)
 	row := ptrDB.QueryRow(stmt)
-	fmt.Printf("Buscando:  (Campo:%v, Valor: %v) en %v\n", field, value, table)
 
 	var existencia int64
 	err = row.Scan(&existencia)
@@ -95,14 +89,12 @@ func (me *Surtidor) InsertarSurtidorPostgres() bool {
 		fmt.Println("No se ha podido iniciar transaccion: ", err)
 		return false
 	}
-	fmt.Println("# Querying")
 	queryS := fmt.Sprintf(`
 	INSERT INTO public."SURTIDORES"(
 	"Surtidor", "CodigoBarra") VALUES(
 		'%v','%v'
 	)
 	`, me.Surtidor, me.CodigoBarra)
-	fmt.Println("Consulta Surtidor, creacion: \n", queryS)
 	stmt, err := tx.Prepare(queryS)
 	if err != nil {
 		fmt.Println("No se ha podido instanciar  consulta", err)
@@ -143,10 +135,7 @@ func (me *Surtidor) ActualizaNombreSurtidor(Nombre string) bool {
 		return false
 	}
 
-	fmt.Println("# Existe al menos uno")
-	fmt.Println("# crear stmt")
 	stmt := fmt.Sprintf(`UPDATE public."SURTIDORES" SET "Usuario"='%v' WHERE  "CodigoBarra"='%v';`, Nombre, me.CodigoBarra)
-	fmt.Println(stmt)
 	ptrDB.QueryRow(stmt)
 
 	ptrDB.Close()

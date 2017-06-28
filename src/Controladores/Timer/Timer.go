@@ -18,8 +18,14 @@ var exp []ExpresionesRegulares.ExpresionRegular
 //IndexGet renderea al indObtenerExpresionesAlmacenadasex de Almacen
 func IndexGet(ctx *iris.Context) {
 	fmt.Println("Timer.Timer.go: GET")
+	var vista reporte.ReporteVista
+	vista.Estado = true
+	vista.Mensaje = "Listo para cargar datos"
+	vista.Error = ""
+	vista.Timer = false
+
 	if sessionUtils.IsStarted(ctx) {
-		ctx.Render("Timer/Timer.html", nil)
+		ctx.Render("Timer/Timer.html", vista)
 	} else {
 		ctx.Redirect("/", 301)
 	}
@@ -29,14 +35,22 @@ func IndexGet(ctx *iris.Context) {
 //IndexPost regresa la peticon post que se hizo desde el index de Almacen
 func IndexPost(ctx *iris.Context) {
 	fmt.Println("Timer.Timerepr.go: POST")
-	var rep Reporte
+	var rep reporte.Reporte
+	var vista reporte.ReporteVista
+	vista.Estado = false
+	vista.Mensaje = "Listo para cargar datos"
+	vista.Error = ""
+	vista.Timer = false
+
 	exp, _, err := ExpresionesRegulares.ObtenerExpresionesAlmacenadas()
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
-
 	rep.CodigoBarraTicket = ctx.FormValue("Ticket")
 	rep.CodigoBarraSurtidor = ctx.FormValue("Surtidor")
+
+	vista.CodigoBarraTicket.CodigoBarraTicket = rep.CodigoBarraTicket
+	vista.CodigoBarraSurtidor.CodigoBarraSurtidor = rep.CodigoBarraSurtidor
 
 	Entrada := ctx.FormValue("Entrada")
 
@@ -62,32 +76,33 @@ func IndexPost(ctx *iris.Context) {
 			existeEnReporte, report, err := reporte.ConsultarTicketExisteYRegresarContenidoPorCampo(Entrada, "CodigoBarraTicket", "REPORTE")
 			rep.CodigoBarraTicket = Entrada
 			if (rep.CodigoBarraTicket != "" && rep.CodigoBarraSurtidor == "") || (rep.CodigoBarraTicket == "" && rep.CodigoBarraSurtidor != "") {
-				fmt.Println("Falta 1.")
+				vista.Mensaje = "Tiene 3 segundos para introducir Codigo de Surtidor"
 			}
 			if err != nil {
 				fmt.Println("Error: ", err)
 			}
 			if existeEnReporte {
 				fmt.Println("La matrola existe")
-				if reporte.TimeIn.Before(reporte.TimeOut) {
-					fmt.Println("Ya se ha cerrado el Ticket")
-					rep.CodigoBarraSurtidor = ""
-					rep.CodigoBarraTicket = ""
+				if report.TimeIn.Before(report.TimeOut) {
+					vista.Mensaje = "Ya se ha cerrado el ticket."
+					vista.Estado = true
+					vista.CodigoBarraTicket.CodigoBarraTicket = ""
+					vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
 				} else {
 					fmt.Println("InsertarSalida")
 					salida := time.Now()
 					report.TimeOut = salida
-					minutos := int64(reporte.TimeOut.Sub(reporte.TimeIn).Minutes())
+					minutos := int64(report.TimeOut.Sub(report.TimeIn).Minutes())
 					report.DuracionM = minutos
 					fmt.Println(report)
-					err = ActualizaTicket(report)
+					err = reporte.ActualizaTicket(report)
 					if err != nil {
 						fmt.Println("Imposible actualizar de ticket leido con entrada ticket.")
 					} else {
 						fmt.Printf("Tiempo transcurrido: %v minutos, hora actual: %v", minutos, salida)
 					}
-					rep.CodigoBarraSurtidor = ""
-					rep.CodigoBarraTicket = ""
+					vista.CodigoBarraTicket.CodigoBarraTicket = ""
+					vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
 				}
 			} else {
 				fmt.Println("Dentro de ticket esta en la opcionde alta.")
@@ -106,7 +121,7 @@ func IndexPost(ctx *iris.Context) {
 							rep.TimeOut = rep.TimeIn
 							rep.CodigoBarraSurtidor = surt.CodigoBarra
 							rep.DuracionM = 0
-							err = InsertarTicket(rep)
+							err = reporte.InsertarTicket(rep)
 							if err != nil {
 								fmt.Println(err)
 								fmt.Println("No ha sido posible insertar, vuelva a intentar")
@@ -152,7 +167,7 @@ func IndexPost(ctx *iris.Context) {
 								minutos := int64(report.TimeOut.Sub(report.TimeIn).Minutes())
 								report.DuracionM = minutos
 								fmt.Println(report)
-								err = ActualizaTicket(report)
+								err = reporte.ActualizaTicket(report)
 								if err != nil {
 									fmt.Println("imposible actualizar")
 								} else {
@@ -172,7 +187,7 @@ func IndexPost(ctx *iris.Context) {
 								rep.TimeOut = rep.TimeIn
 								rep.DuracionM = 0
 								rep.CodigoBarraSurtidor = surt.CodigoBarra
-								err := InsertarTicket(rep)
+								err := reporte.InsertarTicket(rep)
 								if err != nil {
 									fmt.Println(err)
 								}
@@ -200,6 +215,6 @@ func IndexPost(ctx *iris.Context) {
 
 	}
 	fmt.Println(rep)
-	ctx.Render("Timer/Timer.html", rep)
+	ctx.Render("Timer/Timer.html", vista)
 
 }

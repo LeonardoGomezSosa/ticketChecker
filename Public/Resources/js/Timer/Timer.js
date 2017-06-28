@@ -4,6 +4,8 @@ $("document").ready(function () {
         ticket = $("#Ticket").val();
         surtidor = $("#Surtidor").val();
 
+        
+
         var request = $.ajax({
             url: "/Timer",
             method: "POST",
@@ -30,3 +32,10 @@ $("document").ready(function () {
     });
 
 });
+
+function ShowAlert(){
+    $("#TimerDiv").alert();
+}
+function CloseAlert(){
+    $("#TimerDiv").alert('close');
+}

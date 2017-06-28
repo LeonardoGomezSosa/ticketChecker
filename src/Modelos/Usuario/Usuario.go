@@ -66,10 +66,8 @@ func QueryFieldValueExist(value string, field string, table string) (bool, error
 		return false, err
 	}
 
-	fmt.Println("# Querying")
 	stmt := fmt.Sprintf(`SELECT count(*)  FROM public."%v" where "%v"='%v'`, table, field, value)
 	row := ptrDB.QueryRow(stmt)
-	fmt.Printf("Buscando:  (Campo:%v, Valor: %v) en %v\n", field, value, table)
 
 	var existencia int64
 	err = row.Scan(&existencia)
@@ -99,7 +97,6 @@ func (me *Usuario) InsertarUsuarioPostgres() bool {
 		fmt.Println("No se ha podido iniciar transaccion: ", err)
 		return false
 	}
-	fmt.Println("# Querying")
 	queryS := fmt.Sprintf(`
 	INSERT INTO public."ADMINISTRADORES"(
 	"Usuario", "Nombre", "Password", "Correo") VALUES(
