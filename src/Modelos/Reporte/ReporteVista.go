@@ -12,7 +12,8 @@ type ReporteVista struct {
 	Estado              bool
 	Error               string
 	Mensaje             string
-	Timer               bool
+	TimerOn             bool
+	Concluido           bool
 }
 
 // CodigoBarraTicketVista estructura que representa el miembro "" de la estructura reporte en la vista.

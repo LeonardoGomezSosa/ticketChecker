@@ -30,10 +30,10 @@
     {{template "cabecera_ticket"}}
 
     <section class="container">
-
+        <label for="Estado">Estado: </label><input type="text" name="Estado" id="Estado" value={{.Estado}} placeholder="Estado">
+        <label for="Timer">Timer: </label><input type="text" name="Timer" id="Timer" value={{.TimerOn}} placeholder="Timer">
+        <label for="Concluido">Finalizado: </label><input type="text" name="Concluido" id="Concluido" value={{.Concluido}} placeholder="Concluido">
         {{$estado := .Estado}} 
-        {{.Estado}} 
-        <label for="Estado">Estado: </label><input type="text" name="Estado" value="{{.Estado}}" placeholder="Estado">
         {{if $estado}}
             <div class="alert alert-dismissable fade in alert-info" id="TimerDiv">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{.Mensaje}}

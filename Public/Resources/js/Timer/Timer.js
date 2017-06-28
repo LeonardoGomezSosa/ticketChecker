@@ -1,5 +1,4 @@
 $("document").ready(function () {
-    
     $("#AceptarCodigo").on('click', function (e) {
         entrada = $("#Entrada").val();
         ticket = $("#Ticket").val();
@@ -21,9 +20,12 @@ $("document").ready(function () {
             entrada = $("#Entrada").val();
             ticket = $("#Ticket").val();
             surtidor = $("#Surtidor").val();
-            setTimeout(CloseAlert, 3000);
-            if (ticket !== "" && surtidor === "" || ticket === "" && surtidor !== "") {
-                console.log("Solo uno de los datos ha sido fijado")
+
+            timerOn = $("#TimerOn").val();
+            Concluido = myString == $("#Concluido").val();
+            
+            if (Concluido == false) {
+                setTimeout(CloseAlert, 3000);
             }
         });
 
@@ -31,9 +33,9 @@ $("document").ready(function () {
 
 });
 
-function ShowAlert(){
+function ShowAlert() {
     $("#TimerDiv").alert();
 }
-function CloseAlert(){
+function CloseAlert() {
     $("#TimerDiv").alert('close');
 }
