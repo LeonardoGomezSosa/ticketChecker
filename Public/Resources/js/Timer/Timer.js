@@ -1,11 +1,9 @@
 $("document").ready(function () {
+    
     $("#AceptarCodigo").on('click', function (e) {
         entrada = $("#Entrada").val();
         ticket = $("#Ticket").val();
         surtidor = $("#Surtidor").val();
-
-        
-
         var request = $.ajax({
             url: "/Timer",
             method: "POST",
@@ -23,9 +21,9 @@ $("document").ready(function () {
             entrada = $("#Entrada").val();
             ticket = $("#Ticket").val();
             surtidor = $("#Surtidor").val();
+            setTimeout(CloseAlert, 3000);
             if (ticket !== "" && surtidor === "" || ticket === "" && surtidor !== "") {
                 console.log("Solo uno de los datos ha sido fijado")
-                alert("Solo uno de los datos ha sido fijado")
             }
         });
 

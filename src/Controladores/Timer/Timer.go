@@ -39,12 +39,13 @@ func IndexPost(ctx *iris.Context) {
 	var vista reporte.ReporteVista
 	vista.Estado = false
 	vista.Mensaje = "Listo para cargar datos"
-	vista.Error = ""
-	vista.Timer = false
 
 	exp, _, err := ExpresionesRegulares.ObtenerExpresionesAlmacenadas()
 	if err != nil {
 		fmt.Println("Error: ", err)
+		vista.Estado = false
+		vista.Mensaje = "Listo para cargar datos"
+		vista.Error = "Error al consultar el catalogo de expresiones regulares."
 	}
 	rep.CodigoBarraTicket = ctx.FormValue("Ticket")
 	rep.CodigoBarraSurtidor = ctx.FormValue("Surtidor")
@@ -58,6 +59,8 @@ func IndexPost(ctx *iris.Context) {
 
 	if Entrada == "" {
 		fmt.Println("Viene vacio")
+		vista.Estado = true
+		vista.Error = "Introducir un dato."
 
 	} else {
 		mensaje := "No se encuentra en alguna categoria."
@@ -69,17 +72,24 @@ func IndexPost(ctx *iris.Context) {
 			}
 		}
 
-		fmt.Println("Categoria", mensaje)
-
 		switch mensaje {
 		case "ticket":
 			existeEnReporte, report, err := reporte.ConsultarTicketExisteYRegresarContenidoPorCampo(Entrada, "CodigoBarraTicket", "REPORTE")
 			rep.CodigoBarraTicket = Entrada
-			if (rep.CodigoBarraTicket != "" && rep.CodigoBarraSurtidor == "") || (rep.CodigoBarraTicket == "" && rep.CodigoBarraSurtidor != "") {
-				vista.Mensaje = "Tiene 3 segundos para introducir Codigo de Surtidor"
-			}
 			if err != nil {
-				fmt.Println("Error: ", err)
+				vista.Estado = true
+				vista.Error = fmt.Sprintf("Error al consultar Ticket: %v.", err)
+				vista.CodigoBarraTicket.CodigoBarraTicket = ""
+				rep.CodigoBarraTicket = ""
+			}
+			if (rep.CodigoBarraTicket != "" && rep.CodigoBarraSurtidor == "") || (rep.CodigoBarraTicket == "" && rep.CodigoBarraSurtidor != "") {
+				vista.Estado = true
+				if rep.CodigoBarraTicket != "" {
+					vista.Mensaje = "Tiene 3 segundos para introducir Codigo de Surtidor"
+				} else if rep.CodigoBarraSurtidor != "" {
+					vista.Mensaje = "Tiene 3 segundos para introducir Codigo de Ticket"
+				}
+
 			}
 			if existeEnReporte {
 				fmt.Println("La matrola existe")
@@ -98,8 +108,13 @@ func IndexPost(ctx *iris.Context) {
 					err = reporte.ActualizaTicket(report)
 					if err != nil {
 						fmt.Println("Imposible actualizar de ticket leido con entrada ticket.")
+						vista.Estado = false
+						vista.Error = fmt.Sprintf("Error al Actualizar Reporte del Ticket:\n %v", err)
+						vista.Mensaje = ""
 					} else {
-						fmt.Printf("Tiempo transcurrido: %v minutos, hora actual: %v", minutos, salida)
+						vista.Estado = true
+						vista.Mensaje = fmt.Sprintf("Tiempo transcurrido: %v minutos, hora actual: %v", minutos, salida)
+						vista.Error = ""
 					}
 					vista.CodigoBarraTicket.CodigoBarraTicket = ""
 					vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
@@ -108,36 +123,45 @@ func IndexPost(ctx *iris.Context) {
 				fmt.Println("Dentro de ticket esta en la opcionde alta.")
 				if rep.CodigoBarraSurtidor == "" {
 					fmt.Println("No hacer nada hasta que tengas Surtidor.")
+					vista.CodigoBarraTicket.CodigoBarraTicket = rep.CodigoBarraTicket
 				} else {
 					fmt.Println("Se tiene previamente un surtidor, valida si existe.")
 					existeSurtidor, surt, err := Surtidor.QuerySurtidorExist(rep.CodigoBarraSurtidor, "CodigoBarra", "SURTIDORES")
 					if err != nil {
 						fmt.Println("Error al buscar Surtidor: ", err)
+						vista.Estado = false
+						vista.Error = fmt.Sprintf("Error al buscar Surtidor:\n %v", err)
+						vista.Mensaje = ""
 					} else {
 						if existeSurtidor {
 							fmt.Println("Si el surtidor existe:")
-
 							rep.TimeIn = time.Now()
 							rep.TimeOut = rep.TimeIn
 							rep.CodigoBarraSurtidor = surt.CodigoBarra
 							rep.DuracionM = 0
 							err = reporte.InsertarTicket(rep)
 							if err != nil {
-								fmt.Println(err)
-								fmt.Println("No ha sido posible insertar, vuelva a intentar")
-							} else {
-								fmt.Println("Ha sido posible insertar")
+								vista.Estado = false
+								vista.Error = fmt.Sprintf("Error al Insertar Ticket Surtidor:\n %v.", err)
+								vista.Mensaje = ""
 							}
+							vista.Estado = true
+							vista.Mensaje = fmt.Sprintf("Insertado el registro, Corre tu tiempo.")
+							vista.Error = ""
+							vista.CodigoBarraTicket.CodigoBarraTicket = ""
+							vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
 						} else {
 							fmt.Println("El surtidor no existe.")
+							vista.Estado = false
+							vista.Error = fmt.Sprintf("El surtidor no existe.")
+							vista.Mensaje = ""
 						}
 					}
 					fmt.Println("Se forza el reinicio de la captura.")
-					rep.CodigoBarraTicket = ""
-					rep.CodigoBarraSurtidor = ""
+					vista.CodigoBarraTicket.CodigoBarraTicket = ""
+					vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
 				}
 			}
-
 			break
 		case "Surtidor":
 			rep.CodigoBarraSurtidor = Entrada
@@ -147,10 +171,14 @@ func IndexPost(ctx *iris.Context) {
 				fmt.Println("Falta 1.")
 			}
 			if err != nil {
+				vista.Estado = false
+				vista.Error = fmt.Sprintf("Error al buscar Surtidor:\n %v.", err)
 				fmt.Println("Error al buscar Surtidor: ", err)
 			}
 			if existeSurtidor {
 				fmt.Println("Comprobar si tienes un ticket.")
+				vista.CodigoBarraSurtidor.CodigoBarraSurtidor = rep.CodigoBarraSurtidor
+
 				if rep.CodigoBarraTicket != "" {
 					existeEnReporte, report, err := reporte.ConsultarTicketExisteYRegresarContenidoPorCampo(rep.CodigoBarraTicket, "CodigoBarraTicket", "REPORTE")
 					if err == nil {
@@ -170,12 +198,14 @@ func IndexPost(ctx *iris.Context) {
 								err = reporte.ActualizaTicket(report)
 								if err != nil {
 									fmt.Println("imposible actualizar")
+									vista.Estado = false
+									vista.Error = fmt.Sprintf("Error al Actualizar Ticket Surtidor:\n %v", err)
 								} else {
-
-									fmt.Printf("Tiempo transcurrido: %v minutos, hora actual: %v", minutos, salida)
+									vista.Estado = true
+									vista.Mensaje = fmt.Sprintf("Tiempo transcurrido: %v minutos, hora actual: %v", minutos, salida)
 								}
-								rep.CodigoBarraSurtidor = ""
-								rep.CodigoBarraTicket = ""
+								vista.CodigoBarraTicket.CodigoBarraTicket = ""
+								vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
 							}
 						} else {
 							fmt.Println("La matrola no existe.")
@@ -189,28 +219,43 @@ func IndexPost(ctx *iris.Context) {
 								rep.CodigoBarraSurtidor = surt.CodigoBarra
 								err := reporte.InsertarTicket(rep)
 								if err != nil {
-									fmt.Println(err)
+									vista.Estado = false
+									vista.Error = fmt.Sprintf("Error al Insertar Ticket Surtidor:\n %v", err)
 								}
-								rep.CodigoBarraTicket = ""
-								rep.CodigoBarraSurtidor = ""
+								vista.Estado = true
+								vista.Mensaje = fmt.Sprintf("Insertado el registro, Corre tu tiempo.")
+								vista.Error = ""
+								vista.CodigoBarraTicket.CodigoBarraTicket = ""
+								vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
 							}
 						}
 					} else {
 						fmt.Println("Error al consultar ticket: ", err)
-						rep.CodigoBarraTicket = ""
-						rep.CodigoBarraSurtidor = ""
+						vista.Estado = false
+						vista.Error = fmt.Sprintf("Error al consultar ticket:\n %v.", err)
+						vista.CodigoBarraTicket.CodigoBarraTicket = ""
+						vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
 					}
 				} else {
 					fmt.Println("No hacer nada hasta recibir alguna entrada valida.")
+					vista.Estado = true
+					vista.Mensaje = "Tiene 3 segundos para introducir Codigo de Ticket"
 				}
 			} else {
-				fmt.Println("No existe el surtidor en la bd.")
+				fmt.Println("No existe el surtidor en la BD.")
+				vista.Estado = false
+				vista.Error = "No existe el surtidor en la BD."
+				vista.CodigoBarraTicket.CodigoBarraTicket = ""
+				vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
 			}
 			break
 		default:
 			fmt.Println("No hay nada que hacer")
-			rep.CodigoBarraTicket = ""
-			rep.CodigoBarraSurtidor = ""
+			vista.Estado = false
+			vista.Error = "No es una categoria de Ticket reconocida"
+			vista.Mensaje = ""
+			vista.CodigoBarraTicket.CodigoBarraTicket = ""
+			vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
 		}
 
 	}
