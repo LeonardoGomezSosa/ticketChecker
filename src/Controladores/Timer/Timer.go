@@ -60,6 +60,7 @@ func IndexPost(ctx *iris.Context) {
 	vista.Concluido, err = strconv.ParseBool(concluido)
 
 	if err != nil {
+		fmt.Println("Error al parsear Concluido", err)
 		vista.Concluido = false
 	}
 
@@ -222,6 +223,7 @@ func IndexPost(ctx *iris.Context) {
 									vista.TimeIn.TimeIn = report.TimeIn
 									vista.TimeOut.TimeOut = report.TimeOut
 									vista.DuracionM.DuracionM = report.DuracionM
+									vista.Concluido = true
 									err = reporte.ActualizaTicket(report)
 									if err != nil {
 										fmt.Println("Imposible actualizar de ticket leido con entrada ticket.")

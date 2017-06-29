@@ -22,7 +22,7 @@ $("document").ready(function () {
             surtidor = $("#Surtidor").val();
 
             timerOn = $("#TimerOn").val();
-            Concluido = myString == $("#Concluido").val();
+            Concluido = 'true' == $("#Concluido").val();
             
             if (Concluido == false) {
                 setTimeout(CloseAlert, 3000);
