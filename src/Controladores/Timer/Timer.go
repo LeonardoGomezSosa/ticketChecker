@@ -86,7 +86,7 @@ func IndexPost(ctx *iris.Context) {
 				if (rep.CodigoBarraTicket != "" && rep.CodigoBarraSurtidor == "") || (rep.CodigoBarraTicket == "" && rep.CodigoBarraSurtidor != "") {
 					vista.Estado = true
 					if rep.CodigoBarraSurtidor != "" {
-						vista.Mensaje = "Tiene 3 segundos para introducir Codigo de Ticket"
+						vista.Mensaje = "Tiene 3 segundos para introducir Codigo de Surtidor"
 					}
 				}
 				fmt.Println("La matrola existe")
@@ -132,8 +132,11 @@ func IndexPost(ctx *iris.Context) {
 				fmt.Println("Dentro de ticket esta en la opcionde alta.")
 				if rep.CodigoBarraSurtidor == "" {
 					fmt.Println("No hacer nada hasta que tengas Surtidor.")
-					vista.CodigoBarraTicket.CodigoBarraTicket = rep.CodigoBarraTicket
+					fmt.Println("No hacer nada hasta recibir alguna entrada valida.")
+					vista.CodigoBarraTicket.CodigoBarraTicket = Entrada
 					vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
+					vista.Estado = true
+					vista.Mensaje = "Tiene 3 segundos para introducir Codigo de Surtidor"
 				} else {
 					fmt.Println("Se tiene previamente un surtidor, valida si existe.")
 					existeSurtidor, surt, err := Surtidor.QuerySurtidorExist(rep.CodigoBarraSurtidor, "CodigoBarra", "SURTIDORES")
