@@ -54,6 +54,9 @@ func main() {
 	app.Get("/Timer", Timer.IndexGet)
 	app.Post("/Timer", Timer.IndexPost)
 
+	app.Get("/queestapasando", Timer.CapturaRespuestaGet)
+	app.Post("/queestapasando", Timer.CapturaRespuestaPost)
+
 	//###################### Listen Server #############################
 
 	if DataCfg.Puerto != "" {

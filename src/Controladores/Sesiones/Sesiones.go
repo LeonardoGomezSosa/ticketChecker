@@ -2,67 +2,100 @@ package sessionUtils
 
 import (
 	"fmt"
-
 	"net/http"
 
+	"../../Modelos/Reporte"
 	"../../Modelos/Usuario"
+	"../../Modulos/General"
+	"github.com/gorilla/securecookie"
 	iris "gopkg.in/kataras/iris.v6"
+)
+
+var cookieHandler = securecookie.New(
+	securecookie.GenerateRandomKey(64),
+	securecookie.GenerateRandomKey(32),
 )
 
 // StartSession Inicia la sesion
 func StartSession(ctx *iris.Context, usr usuario.Usuario) {
-	galleta := &http.Cookie{Name: "UsuarioKsd", Value: usr.Usuario, MaxAge: 1200}
-	galleta2 := &http.Cookie{Name: "ColeccionKsd", Value: usr.Coleccion, MaxAge: 1200}
-
-	ctx.SetCookieKV("IDUsuario", usr.Coleccion)
-	http.SetCookie(ctx.ResponseWriter, galleta)
-	http.SetCookie(ctx.ResponseWriter, galleta2)
+	if encoded, err := cookieHandler.Encode("session", usr); err == nil {
+		galleta := &http.Cookie{
+			Name:  "session",
+			Value: encoded,
+			Path:  "/",
+		}
+		http.SetCookie(ctx.ResponseWriter, galleta)
+	}
 }
 
 // IsStarted verifica si existe la sesion Usuario
 func IsStarted(ctx *iris.Context) bool {
-	cookie, err := ctx.Request.Cookie("UsuarioKsd")
-	if err != nil {
-		fmt.Println("la galleta no se puede consumir: ", err)
-		return false
-	}
-	fmt.Println("la galleta: ", cookie)
-	if cookie.Value != "" {
-		return true
+	if cookie, err := ctx.Request.Cookie("session"); err == nil {
+		cookieValue := usuario.Usuario{}
+		if err = cookieHandler.Decode("session", cookie.Value, &cookieValue); err == nil {
+			if !MoGeneral.EstaVacio(cookieValue.Usuario) {
+				return true
+			}
+		}
 	}
 	return false
 }
 
 // DeleteSsn Elimina los datos de la sesion
 func DeleteSsn(ctx *iris.Context) {
-	fmt.Println("Borrar sesion")
-
-	http.SetCookie(ctx.ResponseWriter, nil)
-	cookie, err := ctx.Request.Cookie("UsuarioKsd")
-	if err != nil {
-		fmt.Println("La galleta no se puede consumir (Pobre monstruo come galletas): ", err)
+	cookie := &http.Cookie{
+		Name:   "session",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
 	}
-
-	galleta := &http.Cookie{Name: "UsuarioKsd", Path: "/", MaxAge: -1}
-	galleta2 := &http.Cookie{Name: "ColeccionKsd", Path: "/", MaxAge: -1}
-	http.SetCookie(ctx.ResponseWriter, galleta)
-	http.SetCookie(ctx.ResponseWriter, galleta2)
-	fmt.Println("la galleta: ", cookie)
+	http.SetCookie(ctx.ResponseWriter, cookie)
 	ctx.Redirect("/", http.StatusFound)
-
 }
 
-// BorrarGalleta  Vino el Monstruo y se la comio
-func BorrarGalleta(ctx *iris.Context) bool {
-	cookie, err := ctx.Request.Cookie("UsuarioKsd")
-	ctx.RemoveCookie("UsuarioKsd")
-
-	if err != nil {
-		fmt.Println("la galleta", cookie, " no se puede consumir: ", err)
-		return false
+// CrearGalletaReporte  Crea una galleta para el monstruo come galletas, especiado con criptografia
+func CrearGalletaReporte(ctx *iris.Context, nombre string, valor reporte.Reporte) bool {
+	if encoded, err := cookieHandler.Encode(nombre, valor); err == nil {
+		galleta := &http.Cookie{
+			Name:  nombre,
+			Value: encoded,
+			Path:  "/",
+		}
+		http.SetCookie(ctx.ResponseWriter, galleta)
+		return true
 	}
+	return false
+}
 
-	http.SetCookie(ctx.ResponseWriter, nil)
-	ctx.Redirect("/", 301)
-	return true
+// ConsumirGalleta  vino el monstruo come galletas y eliminó la galleta
+func ConsumirGalleta(ctx *iris.Context, nombre string) bool {
+	cookie := &http.Cookie{
+		Name:   nombre,
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	}
+	http.SetCookie(ctx.ResponseWriter, cookie)
+	return false
+}
+
+//LeerGalletaReporte Obtiene los datos de la Galleta de Reporte
+func LeerGalletaReporte(ctx *iris.Context, nombre string) *reporte.Reporte {
+	cookie, err := ctx.Request.Cookie(nombre)
+	if err != nil {
+		fmt.Println("no se puede leer cookie: ", err)
+		return nil
+	}
+	fmt.Println("==================================================")
+	fmt.Println("Cookie recibida: ", cookie)
+	fmt.Println("Cookie Name: ", cookie.Name)
+	fmt.Println("Cookie Value: ", cookie.Value)
+	fmt.Println("==================================================")
+	var reporte reporte.Reporte
+	if err = cookieHandler.Decode(cookie.Name, cookie.Value, &reporte); err == nil {
+		fmt.Println(reporte)
+		return &reporte
+	}
+	fmt.Println("no se puede decodificar: ", err)
+	return nil
 }

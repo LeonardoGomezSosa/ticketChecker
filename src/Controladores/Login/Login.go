@@ -76,6 +76,10 @@ func IndexPost(ctx *iris.Context) {
 			//crear cookie
 			if !sessionUtils.IsStarted(ctx) {
 				fmt.Println("Se debe instanciar una sesion")
+				usu.Password = ""
+				usu.Empresa = ""
+				usu.Correo = ""
+				usu.Coleccion = ""
 				sessionUtils.StartSession(ctx, *usu)
 				fmt.Println(ctx.GetCookie("Usuario"))
 			}

@@ -32,8 +32,34 @@
     <section class="container">
 
         {{$estado := .Estado}} 
-        {{.Estado}} 
-        <label for="Estado">Estado: </label><input type="text" name="Estado" value="{{.Estado}}" placeholder="Estado">
+        <div class="input-group">
+            <label for="Estado" class="input-group-addon">Estado: </label>
+            <input class="form-control" type="text" id="Estado" name="Estado" value="{{.Estado}}" placeholder="Estado">
+        </div>
+        <div class="input-group">
+            <label for="Surtidor" class="input-group-addon">Surtidor: </label>
+            <input class="form-control" type="text" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}">
+        </div>
+        <div class="input-group">
+            <label for="Ticket" class="input-group-addon">Ticket: </label>
+            <input class="form-control" type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}">
+        </div>
+        <div class="input-group">
+            <label for="TimeIn" class="input-group-addon">TimeIn: </label>
+            <input class="form-control" type="text" id="TimeIn" name="TimeIn" value="{{.TimeIn.TimeIn}}" placeholder="TimeIn">
+        </div>
+        <div class="input-group">
+            <label for="TimeOut" class="input-group-addon">TimeOut: </label>
+            <input class="form-control" type="text" id="TimeOut" name="TimeOut" value="{{.TimeOut.TimeOut}}" placeholder="TimeOut">
+        </div>
+        <div class="input-group">
+            <label for="Respuesta" class="input-group-addon">Respuesta: </label>
+            <input class="form-control" type="text" id="Respuesta" name="Respuesta" value="{{.Respuesta.Respuesta}}" placeholder="Respuesta">
+        </div>
+        <div class="input-group">
+            <label for="DuracionMinutos" class="input-group-addon">DuracionMinutos: </label>
+            <input class="form-control" type="text" id="DuracionMinutos" name="DuracionMinutos" value="{{.DuracionM.DuracionM}}" placeholder="DuracionMinutos">
+        </div>
         {{if $estado}}
             <div class="alert alert-dismissable fade in alert-info" id="TimerDiv">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{.Mensaje}}
@@ -47,19 +73,15 @@
 
             <div class="clearfix">&nbsp;</div>
             <form method="POST">
+                <h1>&iquest;HA SURTIDO COMPLETO EL PEDIDO?</h1>
                 <div class="input-group">
-                    <input type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}">
-                    <input type="textAceptarCodigo" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}">
-                </div>
-                <div class="input-group">
-                    <h1>aqui se hace la pausa</h1>
-                    <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
+                    <label for="Entrada" class="input-group-addon"> <span class="glyphicon glyphicon-barcode"></span> Respuesta: </label>
                     <input type="text" class="form-control" id="Entrada" name="Entrada">
                 </div>
 
                 <div class="clearfix">&nbsp;</div>
                 <button class="btn btn-secondary">Cancelar</button>
-                <button class="btn btn-primary" id="AceptarCodigo"> Aceptar </button>
+                <button class="btn btn-primary" id="AceptarRespuesta"> Aceptar </button>
                 <!--<input type="submit" value="Aceptar" id="aceptar" name="aceptar" class="btn btn-primary">-->
 
             </form>

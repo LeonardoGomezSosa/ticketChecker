@@ -21,7 +21,6 @@ func ConexionPsql() (*sql.DB, error) {
 //IniciaSesionEspecificaPsql regresa una base de datos con su sesion especificada en el parametro para commit y rollback
 func IniciaSesionEspecificaPsql() (*sql.DB, *sql.Tx, error) {
 	Psql, err := ConexionPsql()
-	fmt.Println("Conexion:_ ", Psql)
 	if err != nil {
 		return nil, nil, err
 	}

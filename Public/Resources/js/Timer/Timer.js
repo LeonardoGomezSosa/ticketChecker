@@ -30,7 +30,34 @@ $("document").ready(function () {
         });
 
     });
+$("#AceptarRespuesta").on('click', function (e) {
+        entrada = $("#Entrada").val();
+        ticket = $("#Ticket").val();
+        surtidor = $("#Surtidor").val();
+        var request = $.ajax({
+            url: "/queestapasando",
+            method: "POST",
+            async: false,
+            data: { Entrada: entrada, Ticket: ticket, Surtidor: surtidor },
+            dataType: "html",
+        });
+        request.done(function (data) {
+            $("body").html(data);
+        });
+        request.fail(function (data) {
+            $("body").html(data);
+        });
+        request.always(function () {
+            entrada = $("#Entrada").val();
+            ticket = $("#Ticket").val();
+            surtidor = $("#Surtidor").val();
 
+            timerOn = $("#TimerOn").val();
+            
+                setTimeout(CloseAlert, 3000);
+        });
+
+    });
 });
 
 function ShowAlert() {

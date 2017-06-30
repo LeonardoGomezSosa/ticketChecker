@@ -132,6 +132,12 @@ func IndexPost(ctx *iris.Context) {
 						} else {
 							vista.Estado = true
 							vista.Mensaje = fmt.Sprintf("Tiempo transcurrido: %v minutos, hora actual: %v. \n ¿Ha Surtido el pedido Completo?", minutos, salida.Format("2006-01-02 15:04:05 -0700"))
+							nombre := "vista"
+							galletaCreada := sessionUtils.CrearGalletaReporte(ctx, nombre, report)
+							if galletaCreada {
+								ctx.Redirect("/queestapasando", 301)
+								// sessionUtils.ConsumirGalleta(ctx, nombre)
+							}
 							vista.Error = ""
 							vista.TimerOn = false
 							vista.Concluido = true
@@ -160,6 +166,7 @@ func IndexPost(ctx *iris.Context) {
 								rep.TimeOut = rep.TimeIn
 								rep.CodigoBarraSurtidor = surt.CodigoBarra
 								rep.DuracionM = 0
+								rep.Respuesta = ""
 								err = reporte.InsertarTicket(rep)
 								if err != nil {
 									vista.Estado = false
@@ -235,6 +242,13 @@ func IndexPost(ctx *iris.Context) {
 									} else {
 										vista.Estado = true
 										vista.Mensaje = fmt.Sprintf("Tiempo transcurrido: %v minutos, hora actual: %v. \n ¿Ha Surtido el pedido Completo?", minutos, salida.Format("2006-01-02 15:04:05 -0700"))
+										nombre := "vista"
+										galletaCreada := sessionUtils.CrearGalletaReporte(ctx, nombre, report)
+										fmt.Println("La galleta fue creada? ", galletaCreada)
+										if galletaCreada {
+											ctx.Redirect("/queestapasando", 301)
+											// sessionUtils.ConsumirGalleta(ctx, nombre)
+										}
 										vista.Error = ""
 										vista.TimerOn = false
 										vista.Concluido = true
@@ -252,6 +266,7 @@ func IndexPost(ctx *iris.Context) {
 									rep.TimeOut = rep.TimeIn
 									rep.DuracionM = 0
 									rep.CodigoBarraSurtidor = surt.CodigoBarra
+									rep.Respuesta = ""
 									vista.CodigoBarraTicket.CodigoBarraTicket = report.CodigoBarraTicket
 									vista.CodigoBarraSurtidor.CodigoBarraSurtidor = report.CodigoBarraSurtidor
 									vista.TimeIn.TimeIn = report.TimeIn
@@ -308,5 +323,64 @@ func IndexPost(ctx *iris.Context) {
 	}
 	fmt.Println(vista)
 	ctx.Render("Timer/Timer.html", vista)
+
+}
+
+//CapturaRespuestaGet regresa la peticon get que se hi
+func CapturaRespuestaGet(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Timer.CapturaRespuestaGet")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	var vista reporte.ReporteVista
+	V := sessionUtils.LeerGalletaReporte(ctx, "vista")
+
+	if V != nil {
+		fmt.Println()
+		vista.CodigoBarraTicket.CodigoBarraTicket = V.CodigoBarraTicket
+		vista.CodigoBarraSurtidor.CodigoBarraSurtidor = V.CodigoBarraSurtidor
+		vista.TimeIn.TimeIn = V.TimeIn
+		vista.TimeOut.TimeOut = V.TimeOut
+		vista.DuracionM.DuracionM = V.DuracionM
+		vista.Respuesta.Respuesta = V.Respuesta
+		// vista.Estado = true
+		// vista.Mensaje = "Confirma Operacion"
+		// vista.TimerOn = true
+	} else {
+		ctx.Redirect("/queestapasando", 301)
+	}
+
+	ctx.Render("Timer/TimerResponse.html", vista)
+}
+
+//CapturaRespuestaPost regresa la peticon post que se hizo
+func CapturaRespuestaPost(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Timer.CapturaRespuestaPost")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+
+	fmt.Println("Timer.CapturaRespuestaPost")
+	var vista reporte.ReporteVista
+	V := sessionUtils.LeerGalletaReporte(ctx, "vista")
+	fmt.Println("vista: ", V)
+
+	if V != nil {
+		vista.CodigoBarraTicket.CodigoBarraTicket = V.CodigoBarraTicket
+		vista.CodigoBarraSurtidor.CodigoBarraSurtidor = V.CodigoBarraSurtidor
+		vista.TimeIn.TimeIn = V.TimeIn
+		vista.TimeOut.TimeOut = V.TimeOut
+		vista.DuracionM.DuracionM = V.DuracionM
+		vista.Respuesta.Respuesta = V.Respuesta
+		// vista.Estado = true
+		// vista.TimerOn = false
+	} else {
+		sessionUtils.ConsumirGalleta(ctx, "vista")
+		ctx.Redirect("/Timer", 301)
+	}
+
+	ctx.Render("Timer/TimerResponse.html", vista)
 
 }

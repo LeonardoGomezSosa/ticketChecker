@@ -16,6 +16,7 @@ type Reporte struct {
 	TimeIn              time.Time
 	TimeOut             time.Time
 	DuracionM           int64
+	Respuesta           string
 }
 
 // ConsultarTicketExiste consulta si existe una entrada dada de ticket dado un campo
@@ -74,14 +75,14 @@ func ConsultarTicketExisteYRegresarContenidoPorCampo(value string, field string,
 
 	stmt = fmt.Sprintf(`
 	SELECT 
-	"CodigoBarraTicket", "CodigoBarraSurtidor", "TimeIn", "TimeOut", "DuracionMinutos" 
+	"CodigoBarraTicket", "CodigoBarraSurtidor", "TimeIn", "TimeOut", "DuracionMinutos", "Respuesta" 
 	FROM public."%v" where "%v"='%v' ORDER BY "TimeIn" DESC
 	LIMIT 1
 	`,
 		table, field, value)
 
 	row = ptrDB.QueryRow(stmt)
-	err = row.Scan(&rep.CodigoBarraTicket, &rep.CodigoBarraSurtidor, &rep.TimeIn, &rep.TimeOut, &rep.DuracionM)
+	err = row.Scan(&rep.CodigoBarraTicket, &rep.CodigoBarraSurtidor, &rep.TimeIn, &rep.TimeOut, &rep.DuracionM, &rep.Respuesta)
 	if err != nil {
 		fmt.Println("No se ha podido Recuperar el dato de la consulta : ", err)
 		ptrDB.Close()
@@ -102,11 +103,11 @@ func InsertarTicket(rep Reporte) error {
 		return err
 	}
 	BasePsql.Exec("set transaction isolation level serializable")
-	query := fmt.Sprintf(`INSERT INTO public."%v" VALUES('%v','%v','%v','%v','%v')`, "REPORTE",
+	query := fmt.Sprintf(`INSERT INTO public."%v" VALUES('%v','%v','%v','%v','%v',%v)`, "REPORTE",
 		rep.CodigoBarraTicket, rep.CodigoBarraSurtidor,
 		rep.TimeIn.Format("2006-01-02 15:04:05 -0700"),
 		rep.TimeIn.Format("2006-01-02 15:04:05 -0700"),
-		rep.DuracionM)
+		rep.DuracionM, rep.Respuesta)
 	_, errsql := SesionPsql.Exec(query)
 	if errsql != nil {
 		SesionPsql.Rollback()
@@ -124,28 +125,22 @@ func InsertarTicket(rep Reporte) error {
 func ActualizaTicket(rep Reporte) error {
 	var SesionPsql *sql.Tx
 	var err error
-	query := fmt.Sprintf(`UPDATE public."%v" SET "TimeOut"='%v', "DuracionMinutos"=%v WHERE "CodigoBarraTicket"='%v'`, "REPORTE",
-		rep.TimeOut.Format("2006-01-02 15:04:05 -0700"), rep.DuracionM, rep.CodigoBarraTicket)
-	fmt.Println(query)
+	query := fmt.Sprintf(`UPDATE public."%v" SET "TimeOut"='%v', "DuracionMinutos"=%v , "Respuesta"='%v' WHERE "CodigoBarraTicket"='%v'`, "REPORTE",
+		rep.TimeOut.Format("2006-01-02 15:04:05 -0700"), rep.DuracionM, rep.CodigoBarraTicket, rep.Respuesta)
 	BasePsql, SesionPsql, err := MoConexion.IniciaSesionEspecificaPsql()
 	if err != nil {
 		fmt.Println("Errores al conectar con postgres: ", err)
 		return err
 	}
-	fmt.Println("1")
 	BasePsql.Exec("set transaction isolation level serializable")
 
 	_, errsql := SesionPsql.Exec(query)
-	fmt.Println("2")
 	if errsql != nil {
-		fmt.Println("3")
 		SesionPsql.Rollback()
 		BasePsql.Close()
 		fmt.Println("Error al insertar el Ticket")
-		fmt.Println(query)
 		return err
 	}
-	fmt.Println("4")
 	SesionPsql.Commit()
 	BasePsql.Close()
 	return nil
