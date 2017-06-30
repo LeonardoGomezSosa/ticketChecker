@@ -61,7 +61,21 @@ func IndexPost(ctx *iris.Context) {
 	Entrada := ctx.FormValue("Entrada")
 
 	fmt.Println("Entrada: ", Entrada)
-	fmt.Println("Entrada: ", TimerOn)
+	fmt.Println("Timer: ", TimerOn)
+
+	// if Entrada != ""{
+	// 	//obtener categoria
+	// 	//switch categoria{
+	// 		// ticket:
+	// 		// if !ticketEnReporte{
+	// 		// esperar  por
+	// 		// }else{
+
+	// 		// }
+	// 	// }
+	// } else {
+	// 	//se renderea con error de vista sin datos
+	// }
 
 	if Entrada == "" {
 		fmt.Println("Viene vacio")
@@ -81,7 +95,7 @@ func IndexPost(ctx *iris.Context) {
 				vista.CodigoBarraTicket.CodigoBarraTicket = ""
 				rep.CodigoBarraTicket = ""
 			}
-
+			fmt.Println("La busqueda devolvio: ", report)
 			if existeEnReporte {
 				if (rep.CodigoBarraTicket != "" && rep.CodigoBarraSurtidor == "") || (rep.CodigoBarraTicket == "" && rep.CodigoBarraSurtidor != "") {
 					vista.Estado = true
@@ -124,7 +138,6 @@ func IndexPost(ctx *iris.Context) {
 						galletaCreada := sessionUtils.CrearGalletaReporte(ctx, nombre, report)
 						if galletaCreada {
 							ctx.Redirect("/RecibirRespuesta", 301)
-							// sessionUtils.ConsumirGalleta(ctx, nombre)
 						}
 					}
 				}
@@ -238,7 +251,6 @@ func IndexPost(ctx *iris.Context) {
 									fmt.Println("La galleta fue creada? ", galletaCreada)
 									if galletaCreada {
 										ctx.Redirect("/RecibirRespuesta", 301)
-										// sessionUtils.ConsumirGalleta(ctx, nombre)
 									}
 								}
 							}

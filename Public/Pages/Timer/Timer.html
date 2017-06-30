@@ -33,8 +33,8 @@
         <input type="hidden" name="Estado" id="Estado" value={{.Estado}}>
         <input type="hidden" name="TimerOn" id="TimerOn" value={{.TimerOn}}>
         <input type="hidden" name="Concluido" id="Concluido" value={{.Concluido}}>
-        <input type="hidden" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}">
-        <input type="hidden" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}">
+        <label for="Ticket">Ticket: </label><input type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}" readonly>
+        <label for="Ticket">Surtidor: </label><input type="text" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}" readonly>
         {{$estado := .Estado}} 
         {{if $estado}}
         <div class="alert alert-dismissable fade in alert-info" id="TimerDiv">
