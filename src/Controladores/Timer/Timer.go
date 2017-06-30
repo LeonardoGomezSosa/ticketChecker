@@ -37,14 +37,18 @@ func IndexGet(ctx *iris.Context) {
 //IndexPost regresa la peticon post que se hizo desde el index de Almacen
 func IndexPost(ctx *iris.Context) {
 	fmt.Println("Timer.Timerepr.go: POST")
+
 	var rep reporte.Reporte
 	var vista reporte.ReporteVista
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/", 301)
+	}
 	vista.Estado = false
 	vista.Mensaje = "Listo para cargar datos"
 	vista.TimerOn = true
 	vista.Concluido = false
 
-	exp, _, err := ExpresionesRegulares.ObtenerExpresionesAlmacenadas()
+	exp, err := ExpresionesRegulares.ObtenerExpresionesAlmacenadas()
 	if err != nil {
 		fmt.Println("Error: ", err)
 		vista.Estado = false
@@ -135,7 +139,7 @@ func IndexPost(ctx *iris.Context) {
 							nombre := "vista"
 							galletaCreada := sessionUtils.CrearGalletaReporte(ctx, nombre, report)
 							if galletaCreada {
-								ctx.Redirect("/queestapasando", 301)
+								ctx.Redirect("/RecibirRespuesta", 301)
 								// sessionUtils.ConsumirGalleta(ctx, nombre)
 							}
 							vista.Error = ""
@@ -246,7 +250,7 @@ func IndexPost(ctx *iris.Context) {
 										galletaCreada := sessionUtils.CrearGalletaReporte(ctx, nombre, report)
 										fmt.Println("La galleta fue creada? ", galletaCreada)
 										if galletaCreada {
-											ctx.Redirect("/queestapasando", 301)
+											ctx.Redirect("/RecibirRespuesta", 301)
 											// sessionUtils.ConsumirGalleta(ctx, nombre)
 										}
 										vista.Error = ""
@@ -328,6 +332,9 @@ func IndexPost(ctx *iris.Context) {
 
 //CapturaRespuestaGet regresa la peticon get que se hi
 func CapturaRespuestaGet(ctx *iris.Context) {
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/", 301)
+	}
 	fmt.Println("=================================")
 	fmt.Println("=================================")
 	fmt.Println("Timer.CapturaRespuestaGet")
@@ -344,11 +351,11 @@ func CapturaRespuestaGet(ctx *iris.Context) {
 		vista.TimeOut.TimeOut = V.TimeOut
 		vista.DuracionM.DuracionM = V.DuracionM
 		vista.Respuesta.Respuesta = V.Respuesta
-		// vista.Estado = true
-		// vista.Mensaje = "Confirma Operacion"
-		// vista.TimerOn = true
+		vista.Estado = true
+		vista.Mensaje = "Confirma Operacion"
+		vista.TimerOn = true
 	} else {
-		ctx.Redirect("/queestapasando", 301)
+		ctx.Redirect("/RecibirRespuesta", 301)
 	}
 
 	ctx.Render("Timer/TimerResponse.html", vista)
@@ -361,7 +368,10 @@ func CapturaRespuestaPost(ctx *iris.Context) {
 	fmt.Println("Timer.CapturaRespuestaPost")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
-
+	if !sessionUtils.IsStarted(ctx) {
+		sessionUtils.ConsumirGalleta(ctx, "vista")
+		ctx.Redirect("/", 301)
+	}
 	fmt.Println("Timer.CapturaRespuestaPost")
 	var vista reporte.ReporteVista
 	V := sessionUtils.LeerGalletaReporte(ctx, "vista")
@@ -374,13 +384,50 @@ func CapturaRespuestaPost(ctx *iris.Context) {
 		vista.TimeOut.TimeOut = V.TimeOut
 		vista.DuracionM.DuracionM = V.DuracionM
 		vista.Respuesta.Respuesta = V.Respuesta
-		// vista.Estado = true
-		// vista.TimerOn = false
+		vista.Estado = true
+		vista.TimerOn = false
 	} else {
 		sessionUtils.ConsumirGalleta(ctx, "vista")
 		ctx.Redirect("/Timer", 301)
 	}
 
-	ctx.Render("Timer/TimerResponse.html", vista)
+	Entrada := ctx.FormValue("Entrada")
+
+	if MoGeneral.EstaVacio(Entrada) {
+		vista.Estado = false
+		vista.Error = "Introducir una Respuesta."
+		ctx.Render("Timer/TimerResponse.html", vista)
+		return
+	}
+	categoria := ExpresionesRegulares.ObtenerCategoriaTexto(Entrada)
+
+	switch categoria {
+	case "Respuesta":
+		vista.Estado = true
+		vista.Mensaje = fmt.Sprintf("Respuesta Valida: %v.", Entrada)
+		vista.Respuesta.Respuesta = Entrada
+		vista.TimerOn = true
+		V.Respuesta = Entrada
+		fmt.Println("Por actualizar : ", *V)
+		if err := reporte.ActualizaTicket(*V); err != nil {
+			vista.Error = fmt.Sprintf("Error al actualizar ticket: %v.", err)
+		} else {
+			sessionUtils.ConsumirGalleta(ctx, "vista")
+			time.Sleep(time.Second * 2)
+			ctx.Redirect("/Timer", 301)
+			return
+		}
+		break
+	default:
+		vista.Estado = false
+		vista.Error = "Introducir una Respuesta Valida."
+		vista.TimerOn = false
+		vista.Respuesta.Respuesta = ""
+		ctx.Render("Timer/TimerResponse.html", vista)
+		return
+	}
+
+	// fmt.Println("Se paso la entrada.")
+	// ctx.Render("Timer/TimerResponse.html", vista)
 
 }

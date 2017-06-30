@@ -126,7 +126,8 @@ func ActualizaTicket(rep Reporte) error {
 	var SesionPsql *sql.Tx
 	var err error
 	query := fmt.Sprintf(`UPDATE public."%v" SET "TimeOut"='%v', "DuracionMinutos"=%v , "Respuesta"='%v' WHERE "CodigoBarraTicket"='%v'`, "REPORTE",
-		rep.TimeOut.Format("2006-01-02 15:04:05 -0700"), rep.DuracionM, rep.CodigoBarraTicket, rep.Respuesta)
+		rep.TimeOut.Format("2006-01-02 15:04:05 -0700"), rep.DuracionM, rep.Respuesta, rep.CodigoBarraTicket)
+	fmt.Println("Consulta:   ", query)
 	BasePsql, SesionPsql, err := MoConexion.IniciaSesionEspecificaPsql()
 	if err != nil {
 		fmt.Println("Errores al conectar con postgres: ", err)

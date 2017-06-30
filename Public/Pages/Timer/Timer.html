@@ -30,41 +30,43 @@
     {{template "cabecera_ticket"}}
 
     <section class="container">
-        <label for="Estado">Estado: </label><input type="text" name="Estado" id="Estado" value={{.Estado}} placeholder="Estado">
-        <label for="Timer">Timer: </label><input type="text" name="Timer" id="Timer" value={{.TimerOn}} placeholder="Timer">
-        <label for="Concluido">Finalizado: </label><input type="text" name="Concluido" id="Concluido" value={{.Concluido}} placeholder="Concluido">
+        <input type="hidden" name="Estado" id="Estado" value={{.Estado}}>
+        <input type="hidden" name="TimerOn" id="TimerOn" value={{.TimerOn}}>
+        <input type="hidden" name="Concluido" id="Concluido" value={{.Concluido}}>
+        <input type="hidden" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}">
+        <input type="hidden" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}">
         {{$estado := .Estado}} 
         {{if $estado}}
-            <div class="alert alert-dismissable fade in alert-info" id="TimerDiv">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{.Mensaje}}
-            </div>
+        <div class="alert alert-dismissable fade in alert-info" id="TimerDiv">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <h4>
+                {{.Mensaje}}
+            </h4>
+        </div>
         {{else}}
-             <div class="alert alert-dismissable fade in alert-danger" id="TimerDiv">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{.Error}}
-            </div>
+        <div class="alert alert-dismissable fade in alert-danger" id="TimerDiv">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <h4>
+                {{.Error}}
+            </h4>
+        </div>
         {{end}}
 
 
+        <div class="clearfix">&nbsp;</div>
+        <form method="POST" id="RespuestaForm">
+
+            <div class="input-group">
+                <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
+                <input type="text" class="form-control" id="Entrada" name="Entrada" >
+            </div>
+
             <div class="clearfix">&nbsp;</div>
-            <form method="POST">
-                <div class="input-group">
+            <button class="btn btn-primary" id="AceptarCodigo"> Aceptar </button>
+            <!--<input type="submit" value="Aceptar" id="aceptar" name="aceptar" class="btn btn-primary">-->
 
-                    <input type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}">
-                    <input type="textAceptarCodigo" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}">
-
-                </div>
-                <div class="input-group">
-                    <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
-                    <input type="text" class="form-control" id="Entrada" name="Entrada">
-                </div>
-
-                <div class="clearfix">&nbsp;</div>
-                <button class="btn btn-secondary">Cancelar</button>
-                <button class="btn btn-primary" id="AceptarCodigo"> Aceptar </button>
-                <!--<input type="submit" value="Aceptar" id="aceptar" name="aceptar" class="btn btn-primary">-->
-
-            </form>
-            <div class="clearfix">&nbsp;</div>
+        </form>
+        <div class="clearfix">&nbsp;</div>
     </section>
 
     <aside></aside>

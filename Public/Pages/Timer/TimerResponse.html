@@ -28,60 +28,60 @@
 <body>
 
     {{template "cabecera_ticket"}}
-
     <section class="container">
 
-        {{$estado := .Estado}} 
-        <div class="input-group">
-            <label for="Estado" class="input-group-addon">Estado: </label>
-            <input class="form-control" type="text" id="Estado" name="Estado" value="{{.Estado}}" placeholder="Estado">
-        </div>
+            <input type="hidden" id="Estado" name="Estado" value="{{.Estado}}"  readonly>
+            <input type="hidden" name="TimerOn" id="TimerOn" value={{.TimerOn}} readonly>
+
         <div class="input-group">
             <label for="Surtidor" class="input-group-addon">Surtidor: </label>
-            <input class="form-control" type="text" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}">
+            <input class="form-control" type="text" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}" readonly>
         </div>
         <div class="input-group">
             <label for="Ticket" class="input-group-addon">Ticket: </label>
-            <input class="form-control" type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}">
+            <input class="form-control" type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}" readonly>
         </div>
         <div class="input-group">
             <label for="TimeIn" class="input-group-addon">TimeIn: </label>
-            <input class="form-control" type="text" id="TimeIn" name="TimeIn" value="{{.TimeIn.TimeIn}}" placeholder="TimeIn">
+            <input class="form-control" type="text" id="TimeIn" name="TimeIn" value="{{.TimeIn.TimeIn}}" placeholder="TimeIn" readonly>
         </div>
         <div class="input-group">
             <label for="TimeOut" class="input-group-addon">TimeOut: </label>
-            <input class="form-control" type="text" id="TimeOut" name="TimeOut" value="{{.TimeOut.TimeOut}}" placeholder="TimeOut">
+            <input class="form-control" type="text" id="TimeOut" name="TimeOut" value="{{.TimeOut.TimeOut}}" placeholder="TimeOut" readonly>
         </div>
-        <div class="input-group">
-            <label for="Respuesta" class="input-group-addon">Respuesta: </label>
-            <input class="form-control" type="text" id="Respuesta" name="Respuesta" value="{{.Respuesta.Respuesta}}" placeholder="Respuesta">
-        </div>
+
         <div class="input-group">
             <label for="DuracionMinutos" class="input-group-addon">DuracionMinutos: </label>
-            <input class="form-control" type="text" id="DuracionMinutos" name="DuracionMinutos" value="{{.DuracionM.DuracionM}}" placeholder="DuracionMinutos">
+            <input class="form-control" type="text" id="DuracionMinutos" name="DuracionMinutos" value="{{.DuracionM.DuracionM}}" placeholder="DuracionMinutos" readonly>
         </div>
+        {{$estado := .Estado}} 
         {{if $estado}}
             <div class="alert alert-dismissable fade in alert-info" id="TimerDiv">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{.Mensaje}}
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <h4>
+                    {{.Mensaje}}
+                </h4>
             </div>
         {{else}}
              <div class="alert alert-dismissable fade in alert-danger" id="TimerDiv">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{.Error}}
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> 
+                <h4>
+                    {{.Error}} 
+                </h4>
             </div>
         {{end}}
 
 
             <div class="clearfix">&nbsp;</div>
-            <form method="POST">
+            <form method="POST" id="RespuestaForm">
                 <h1>&iquest;HA SURTIDO COMPLETO EL PEDIDO?</h1>
                 <div class="input-group">
                     <label for="Entrada" class="input-group-addon"> <span class="glyphicon glyphicon-barcode"></span> Respuesta: </label>
-                    <input type="text" class="form-control" id="Entrada" name="Entrada">
+                    <input type="text" class="form-control" id="EntradaR" name="Entrada">
                 </div>
 
                 <div class="clearfix">&nbsp;</div>
-                <button class="btn btn-secondary">Cancelar</button>
-                <button class="btn btn-primary" id="AceptarRespuesta"> Aceptar </button>
+                <button form="RespuestaForm" class="btn btn-primary" id="AceptarRespuesta"> Aceptar </button>
                 <!--<input type="submit" value="Aceptar" id="aceptar" name="aceptar" class="btn btn-primary">-->
 
             </form>

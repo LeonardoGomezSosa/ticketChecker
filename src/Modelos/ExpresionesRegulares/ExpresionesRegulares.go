@@ -1,10 +1,10 @@
 package ExpresionesRegulares
 
 import (
-	"database/sql"
 	"fmt"
 
 	"../../Modulos/Conexiones"
+	"../../Modulos/General"
 )
 
 // ExpresionRegular Estructura que almacena un objeto expresion regular
@@ -15,29 +15,30 @@ type ExpresionRegular struct {
 }
 
 // ObtenerExpresionesAlmacenadas oBTIENE EL CONJUNTO DE LAS EXPRESIONES REGULARES ALMACENADAS
-func ObtenerExpresionesAlmacenadas() ([]ExpresionRegular, *sql.Rows, error) {
+func ObtenerExpresionesAlmacenadas() ([]ExpresionRegular, error) {
 	db, err := MoConexion.ConexionPsql()
 	if err != nil {
 		fmt.Println("Error: ", err)
+		return nil, err
 	}
 	defer db.Close()
 
 	BasePosGres, err := MoConexion.ConexionPsql()
 	if err != nil {
 		fmt.Println(err)
-		return nil, nil, err
+		return nil, err
 	}
 
 	Query := fmt.Sprintf(`SELECT * FROM public."%v"`, "REGEXTKUS")
 	stmt, err := BasePosGres.Prepare(Query)
 	if err != nil {
 		fmt.Println(err)
-		return nil, nil, err
+		return nil, err
 	}
 	resultSet, err := stmt.Query()
 	if err != nil {
 		fmt.Println(err)
-		return nil, nil, err
+		return nil, err
 	}
 	var aux ExpresionRegular
 	var expresion []ExpresionRegular
@@ -55,5 +56,20 @@ func ObtenerExpresionesAlmacenadas() ([]ExpresionRegular, *sql.Rows, error) {
 	stmt.Close()
 	BasePosGres.Close()
 
-	return expresion, resultSet, err
+	return expresion, err
+}
+
+// ObtenerCategoriaTexto Devuelve la categoria de un texto dado comparando con las expresiones regulares almacenadas en sistema
+func ObtenerCategoriaTexto(PorValidar string) string {
+	exp, err := ObtenerExpresionesAlmacenadas()
+	if err != nil {
+		return fmt.Sprintf("Error al obtener Categorias: %v. ", err)
+	}
+	for _, valor := range exp {
+		expresion := fmt.Sprintf("%s", string(valor.ExpresionRegular))
+		if MoGeneral.ValidaCadenaExpresion(PorValidar, expresion) {
+			return valor.Categoria
+		}
+	}
+	return "No se encuentra en catalogo"
 }
