@@ -103,7 +103,7 @@ func InsertarTicket(rep Reporte) error {
 		return err
 	}
 	BasePsql.Exec("set transaction isolation level serializable")
-	query := fmt.Sprintf(`INSERT INTO public."%v" VALUES('%v','%v','%v','%v','%v',%v)`, "REPORTE",
+	query := fmt.Sprintf(`INSERT INTO public."%v" VALUES('%v','%v','%v','%v','%v','%v')`, "REPORTE",
 		rep.CodigoBarraTicket, rep.CodigoBarraSurtidor,
 		rep.TimeIn.Format("2006-01-02 15:04:05 -0700"),
 		rep.TimeIn.Format("2006-01-02 15:04:05 -0700"),

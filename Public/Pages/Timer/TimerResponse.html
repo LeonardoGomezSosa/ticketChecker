@@ -54,6 +54,7 @@
             <label for="DuracionMinutos" class="input-group-addon">DuracionMinutos: </label>
             <input class="form-control" type="text" id="DuracionMinutos" name="DuracionMinutos" value="{{.DuracionM.DuracionM}}" placeholder="DuracionMinutos" readonly>
         </div>
+        <h1>&iquest;HA SURTIDO COMPLETO EL PEDIDO?</h1>
         {{$estado := .Estado}} 
         {{if $estado}}
             <div class="alert alert-dismissable fade in alert-info" id="TimerDiv">
@@ -74,7 +75,6 @@
 
             <div class="clearfix">&nbsp;</div>
             <form method="POST" id="RespuestaForm">
-                <h1>&iquest;HA SURTIDO COMPLETO EL PEDIDO?</h1>
                 <div class="input-group">
                     <label for="Entrada" class="input-group-addon"> <span class="glyphicon glyphicon-barcode"></span> Respuesta: </label>
                     <input type="text" class="form-control" id="EntradaR" name="Entrada">

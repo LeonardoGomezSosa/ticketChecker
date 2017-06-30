@@ -5,6 +5,8 @@ import (
 )
 
 func main() {
+	beeper.Melody("**")
+	beeper.Melody("-----")
 	beeper.Melody("**-**")
 	// beep, beep, pause, beep, beep
 }

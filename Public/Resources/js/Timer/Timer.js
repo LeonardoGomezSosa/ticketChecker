@@ -45,7 +45,7 @@ function ValidarRespuesta() {
     request.always(function () {
         $("#EntradaR").val("");
         timerOn = $("#TimerOn").val();
-        console.log(timerOn)
+        console.log(timerOn);
         $(".waitgif").hide();
         if (timerOn === true) {
             setTimeout(CloseAlert, 3000);
@@ -58,13 +58,14 @@ function ValidarOperacion() {
     entrada = $("#Entrada").val();
     ticket = $("#Ticket").val();
     surtidor = $("#Surtidor").val();
+    timer = $("#TimerOn").val();
     $(".waitgif").show();
 
     var request = $.ajax({
         url: "/Timer",
         method: "POST",
         async: false,
-        data: { Entrada: entrada, Ticket: ticket, Surtidor: surtidor },
+        data: { Entrada: entrada, Ticket: ticket, Surtidor: surtidor , TimerOn:timer},
         dataType: "html",
     });
     request.done(function (data) {
@@ -77,13 +78,9 @@ function ValidarOperacion() {
         $("#Entrada").val("");
         ticket = $("#Ticket").val();
         surtidor = $("#Surtidor").val();
-        $(".waitgif").hide();
-
         timerOn = $("#TimerOn").val();
 
-        if (Concluido === false) {
-            setTimeout(CloseAlert, 3000);
-        }
+        setTimeout(CloseAlert, 3000);
         $('#RespuestaForm :input:enabled:visible:first').focus();
     });
 }
