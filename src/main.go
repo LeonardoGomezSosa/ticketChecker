@@ -39,8 +39,8 @@ func main() {
 
 	//###################### Ruteo ####################################
 
-	app.Get("/", Login.IndexGet)
-	app.Post("/", Login.IndexPost)
+	app.Get("/Login", Login.IndexGet)
+	app.Post("/Login", Login.IndexPost)
 
 	app.Get("/Recuperar", Recuperar.IndexGet)
 	app.Post("/Recuperar", Recuperar.IndexPost)
@@ -51,8 +51,8 @@ func main() {
 	app.Get("/Eliminar", EliminarCuenta.IndexGet)
 	app.Post("/Eliminar", EliminarCuenta.IndexPost)
 
-	app.Get("/Timer", Timer.IndexGet)
-	app.Post("/Timer", Timer.IndexPost)
+	app.Get("/", Timer.IndexGet)
+	app.Post("/", Timer.IndexPost)
 
 	app.Get("/RecibirRespuesta", Timer.CapturaRespuestaGet)
 	app.Post("/RecibirRespuesta", Timer.CapturaRespuestaPost)

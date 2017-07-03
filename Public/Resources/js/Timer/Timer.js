@@ -62,7 +62,7 @@ function ValidarOperacion() {
     $(".waitgif").show();
 
     var request = $.ajax({
-        url: "/Timer",
+        url: "/",
         method: "POST",
         async: false,
         data: { Entrada: entrada, Ticket: ticket, Surtidor: surtidor , TimerOn:timer},

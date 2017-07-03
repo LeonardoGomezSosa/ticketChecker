@@ -25,13 +25,7 @@ func IndexGet(ctx *iris.Context) {
 	vista.Error = ""
 	vista.TimerOn = false
 	vista.Concluido = false
-
-	if sessionUtils.IsStarted(ctx) {
-		ctx.Render("Timer/Timer.html", vista)
-	} else {
-		ctx.Redirect("/", 301)
-	}
-
+	ctx.Render("Timer/Timer.html", vista)
 }
 
 //IndexPost regresa la peticon post que se hizo desde el index de Almacen
@@ -39,9 +33,6 @@ func IndexPost(ctx *iris.Context) {
 	fmt.Println("Timer.Timerepr.go: POST")
 	var rep reporte.Reporte
 	var vista reporte.ReporteVista
-	if !sessionUtils.IsStarted(ctx) {
-		ctx.Redirect("/", 301)
-	}
 	vista.Estado = false
 	vista.Mensaje = "Listo para cargar datos"
 	vista.TimerOn = true
@@ -62,20 +53,6 @@ func IndexPost(ctx *iris.Context) {
 
 	fmt.Println("Entrada: ", Entrada)
 	fmt.Println("Timer: ", TimerOn)
-
-	// if Entrada != ""{
-	// 	//obtener categoria
-	// 	//switch categoria{
-	// 		// ticket:
-	// 		// if !ticketEnReporte{
-	// 		// esperar  por
-	// 		// }else{
-
-	// 		// }
-	// 	// }
-	// } else {
-	// 	//se renderea con error de vista sin datos
-	// }
 
 	if Entrada == "" {
 		fmt.Println("Viene vacio")
@@ -325,9 +302,7 @@ func IndexPost(ctx *iris.Context) {
 
 //CapturaRespuestaGet regresa la peticon get que se hi
 func CapturaRespuestaGet(ctx *iris.Context) {
-	if !sessionUtils.IsStarted(ctx) {
-		ctx.Redirect("/", 301)
-	}
+
 	fmt.Println("=================================")
 	fmt.Println("=================================")
 	fmt.Println("Timer.CapturaRespuestaGet")
@@ -361,10 +336,7 @@ func CapturaRespuestaPost(ctx *iris.Context) {
 	fmt.Println("Timer.CapturaRespuestaPost")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
-	if !sessionUtils.IsStarted(ctx) {
-		sessionUtils.ConsumirGalleta(ctx, "vista")
-		ctx.Redirect("/", 301)
-	}
+
 	fmt.Println("Timer.CapturaRespuestaPost")
 	var vista reporte.ReporteVista
 	V := sessionUtils.LeerGalletaReporte(ctx, "vista")
@@ -381,7 +353,7 @@ func CapturaRespuestaPost(ctx *iris.Context) {
 		vista.TimerOn = false
 	} else {
 		sessionUtils.ConsumirGalleta(ctx, "vista")
-		ctx.Redirect("/Timer", 301)
+		ctx.Redirect("/", 301)
 	}
 
 	Entrada := ctx.FormValue("Entrada")
@@ -408,7 +380,7 @@ func CapturaRespuestaPost(ctx *iris.Context) {
 		} else {
 			sessionUtils.ConsumirGalleta(ctx, "vista")
 			time.Sleep(time.Second * 2)
-			ctx.Redirect("/Timer", 301)
+			ctx.Redirect("/", 301)
 			return
 		}
 		break
@@ -420,8 +392,5 @@ func CapturaRespuestaPost(ctx *iris.Context) {
 		ctx.Render("Timer/TimerResponse.html", vista)
 		return
 	}
-
-	// fmt.Println("Se paso la entrada.")
-	// ctx.Render("Timer/TimerResponse.html", vista)
 
 }
