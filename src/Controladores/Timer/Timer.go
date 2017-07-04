@@ -22,6 +22,10 @@ func IndexGet(ctx *iris.Context) {
 	var vista reporte.ReporteVista
 	Categoria := ExpresionesRegulares.ObtenerCategoriaTexto("surtidor1")
 	fmt.Println(Categoria)
+	Categoria := ExpresionesRegulares.ObtenerCategoriaTexto("surtidor10")
+	fmt.Println(Categoria)
+	Categoria := ExpresionesRegulares.ObtenerCategoriaTexto("TR-0001")
+	fmt.Println(Categoria)
 	vista.Estado = true
 	vista.Mensaje = "Listo para cargar datos"
 	vista.Error = ""
