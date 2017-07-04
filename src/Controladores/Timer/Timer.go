@@ -20,6 +20,8 @@ var exp []ExpresionesRegulares.ExpresionRegular
 func IndexGet(ctx *iris.Context) {
 	fmt.Println("Timer.Timer.go: GET")
 	var vista reporte.ReporteVista
+	Categoria := ExpresionesRegulares.ObtenerCategoriaTexto("surtidor1")
+	fmt.Println(Categoria)
 	vista.Estado = true
 	vista.Mensaje = "Listo para cargar datos"
 	vista.Error = ""
