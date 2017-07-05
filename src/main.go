@@ -57,6 +57,33 @@ func main() {
 	app.Get("/RecibirRespuesta", Timer.CapturaRespuestaGet)
 	app.Post("/RecibirRespuesta", Timer.CapturaRespuestaPost)
 
+	app.Get("/Surtidors", SurtidorControler.IndexGet)
+	app.Post("/Surtidors", SurtidorControler.IndexPost)
+	app.Post("/Surtidors/search", SurtidorControler.BuscaPagina)
+	app.Post("/Surtidors/agrupa", SurtidorControler.MuestraIndexPorGrupo)
+
+	//Index (Búsqueda)
+	app.Get("/Expresions", ExpresionControler.IndexGet)
+	app.Post("/Expresions", ExpresionControler.IndexPost)
+	app.Post("/Expresions/search", ExpresionControler.BuscaPagina)
+	app.Post("/Expresions/agrupa", ExpresionControler.MuestraIndexPorGrupo)
+
+	//Alta
+	app.Get("/Expresions/alta", ExpresionControler.AltaGet)
+	app.Post("/Expresions/alta", ExpresionControler.AltaPost)
+
+	//Edicion
+	app.Get("/Expresions/edita", ExpresionControler.EditaGet)
+	app.Post("/Expresions/edita", ExpresionControler.EditaPost)
+	app.Get("/Expresions/edita/:ID", ExpresionControler.EditaGet)
+	app.Post("/Expresions/edita/:ID", ExpresionControler.EditaPost)
+
+	//Detalle
+	app.Get("/Expresions/detalle", ExpresionControler.DetalleGet)
+	app.Post("/Expresions/detalle", ExpresionControler.DetallePost)
+	app.Get("/Expresions/detalle/:ID", ExpresionControler.DetalleGet)
+	app.Post("/Expresions/detalle/:ID", ExpresionControler.DetallePost)
+
 	//###################### Listen Server #############################
 
 	if DataCfg.Puerto != "" {

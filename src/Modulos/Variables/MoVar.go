@@ -28,11 +28,26 @@ const (
 
 	//################# DATOS ELASTIC ######################################
 	//Elastic---------------> Documento
-	Index = "clasificadorvisorus"
-	Tipo  = "clasificadorvisorus"
+	Index        = "clasificadorvisorus"
+	Tipo         = "clasificadorvisorus"
 	IndexElastic = "CatalogoProductos"
 	//ColeccionOperacion Nombre de IndexElasticla coleccion que almacena las operaciones Generales
 	ProductosServicios = "ProductosServicios"
+
+	//ColeccionSurtidor nombre de la coleccion de Surtidor en mongo
+	ColeccionSurtidor = "Surtidor"
+
+	//Elastic---------------> Surtidor
+
+	//TipoSurtidor tipo a manejar en elastic
+	TipoSurtidor = "Surtidor"
+
+	ColeccionExpresion = "Expresion"
+
+	//Elastic---------------> Expresion
+
+	//TipoExpresion tipo a manejar en elastic
+	TipoExpresion = "Expresion"
 
 	//TipoOperacion establecido temporalmente para minimizar los errores, posteriormente se obtendrá de algun catalogo
 	TipoOperacion = "Venta"
