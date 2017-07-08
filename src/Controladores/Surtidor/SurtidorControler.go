@@ -72,7 +72,7 @@ func IndexGet(ctx *iris.Context) {
 
 	Send.SIndex.SCabecera = template.HTML(Cabecera)
 	Send.SIndex.SBody = template.HTML(Cuerpo)
-	Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
+	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
 	Paginacion := MoGeneral.ConstruirPaginacion(paginasTotales, 1)
 	Send.SIndex.SPaginacion = template.HTML(Paginacion)
 	Send.SIndex.SResultados = true
@@ -169,7 +169,7 @@ func IndexPost(ctx *iris.Context) {
 		Send.SMsj = "No se recibió una cadena de consulta, favor de escribirla."
 		Send.SResultados = false
 	}
-	Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
+	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
 	ctx.Render("SurtidorIndex.html", Send)
 
 }
@@ -367,7 +367,7 @@ func BuscaPagina(ctx *iris.Context) {
 
 	}
 
-	Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
+	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
 	Send.SEstado = true
 
 	jData, _ := json.Marshal(Send)
@@ -459,7 +459,7 @@ func MuestraIndexPorGrupo(ctx *iris.Context) {
 
 		Send.SIndex.SRMsj = "No se encontraron resultados para: " + cadenaBusqueda + " ."
 	}
-	Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
+	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
 	Send.SEstado = true
 
 	jData, _ := json.Marshal(Send)

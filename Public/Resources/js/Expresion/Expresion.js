@@ -5,7 +5,11 @@
 	//#########################< VALIDACIONES DE JEQUERY >##################################
 	
 	$( document ).ready( function () {	
-		var validator = valida();			
+		console.log("-----------------");
+		console.log("expresion.js");
+		console.log("-----------------");
+		$(".waitgif").hide();
+		// var validator = valida();			
 	});
 
     function valida(){
@@ -144,5 +148,3 @@ function BuscaPagina(num){
 		});
 }
 
-
-%!(EXTRA string=Expresion, string=Expresion)

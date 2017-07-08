@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/leekchan/accounting"
-
 	"../../Modulos/Conexiones"
 	"../../Modulos/General"
 
@@ -150,7 +148,6 @@ func CargaComboSurtidors(ID string) string {
 
 //GeneraTemplatesBusqueda crea templates de tabla de búsqueda
 func GeneraTemplatesBusqueda(Surtidors []SurtidorMgo) (string, string) {
-	floats := accounting.Accounting{Symbol: "", Precision: 2}
 	cuerpo := ``
 
 	cabecera := `<tr>
@@ -192,7 +189,7 @@ func BuscarEnElastic(texto string) *elastic.SearchResult {
 	queryQuotes = queryQuotes.Field("Usuario")
 
 	var docs *elastic.SearchResult
-	var err bool
+	// var err bool
 
 	// docs, err = MoConexion.BuscaElastic(MoVar.TipoSurtidor, queryTilde)
 	// if err {

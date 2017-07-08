@@ -10,7 +10,7 @@ import (
 
 //EIDExpresionExpresion Estructura de campo de Expresion
 type EIDExpresionExpresion struct {
-	IDExpresion int
+	IDExpresion string
 	IEstatus    bool
 	IMsj        string
 	Ihtml       template.HTML

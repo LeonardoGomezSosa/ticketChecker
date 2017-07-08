@@ -50,7 +50,7 @@ func DeleteSsn(ctx *iris.Context) {
 		MaxAge: -1,
 	}
 	http.SetCookie(ctx.ResponseWriter, cookie)
-	ctx.Redirect("/", http.StatusFound)
+	ctx.Redirect("/", 301)
 }
 
 // CrearGalletaReporte  Crea una galleta para el monstruo come galletas, especiado con criptografia
@@ -92,6 +92,27 @@ func LeerGalletaReporte(ctx *iris.Context, nombre string) *reporte.Reporte {
 	fmt.Println("Cookie Value: ", cookie.Value)
 	fmt.Println("==================================================")
 	var reporte reporte.Reporte
+	if err = cookieHandler.Decode(cookie.Name, cookie.Value, &reporte); err == nil {
+		fmt.Println(reporte)
+		return &reporte
+	}
+	fmt.Println("no se puede decodificar: ", err)
+	return nil
+}
+
+//LeerGalletaGeneral Obtiene los datos de la Galleta de Reporte
+func LeerGalletaGeneral(ctx *iris.Context, nombre string) interface{} {
+	cookie, err := ctx.Request.Cookie(nombre)
+	if err != nil {
+		fmt.Println("no se puede leer cookie: ", err)
+		return nil
+	}
+	fmt.Println("==================================================")
+	fmt.Println("Cookie recibida: ", cookie)
+	fmt.Println("Cookie Name: ", cookie.Name)
+	fmt.Println("Cookie Value: ", cookie.Value)
+	fmt.Println("==================================================")
+	var reporte interface{}
 	if err = cookieHandler.Decode(cookie.Name, cookie.Value, &reporte); err == nil {
 		fmt.Println(reporte)
 		return &reporte

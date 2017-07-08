@@ -6,7 +6,6 @@ import (
 
 	"../../Modulos/Conexiones"
 	"../../Modulos/General"
-	"github.com/leekchan/accounting"
 
 	"../../Modulos/Variables"
 	"gopkg.in/mgo.v2/bson"
@@ -18,14 +17,14 @@ import (
 //ExpresionMgo estructura de Expresions mongo
 type ExpresionMgo struct {
 	ID          bson.ObjectId `bson:"_id,omitempty"`
-	IDExpresion int           `bson:"IDExpresion"`
+	IDExpresion string        `bson:"IDExpresion"`
 	Clase       string        `bson:"Clase"`
 	Expresion   string        `bson:"Expresion"`
 }
 
 //ExpresionElastic estructura de Expresions para insertar en Elastic
 type ExpresionElastic struct {
-	IDExpresion int    `json:"IDExpresion"`
+	IDExpresion string `json:"IDExpresion"`
 	Clase       string `json:"Clase"`
 	Expresion   string `json:"Expresion"`
 }
@@ -33,49 +32,103 @@ type ExpresionElastic struct {
 //#########################< FUNCIONES GENERALES MGO >###############################
 
 //GetAll Regresa todos los documentos existentes de Mongo (Por Coleccion)
-func GetAll() []ExpresionMgo {
-	var result []ExpresionMgo
-	s, Expresions, err := MoConexion.GetColectionMgo(MoVar.ColeccionExpresion)
+func GetAll() ([]ExpresionMgo, error) {
+	var aux ExpresionMgo
+	var expresion []ExpresionMgo
+	BasePosGres, err := MoConexion.ConexionPsql()
 	if err != nil {
 		fmt.Println(err)
+		return expresion, err
 	}
-	err = Expresions.Find(nil).All(&result)
+
+	Query := fmt.Sprintf(`SELECT * FROM public."%v"`, "REGEXTKUS")
+	stmt, err := BasePosGres.Prepare(Query)
 	if err != nil {
 		fmt.Println(err)
+		return expresion, err
 	}
-	s.Close()
-	return result
+	resultSet, err := stmt.Query()
+	if err != nil {
+		fmt.Println(err)
+		return expresion, err
+	}
+
+	for resultSet.Next() {
+		err := resultSet.Scan(&aux.IDExpresion, &aux.Clase, &aux.Expresion)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		} else {
+			aux.ID = bson.ObjectIdHex(aux.IDExpresion)
+			expresion = append(expresion, aux)
+		}
+
+	}
+	resultSet.Close()
+	stmt.Close()
+	BasePosGres.Close()
+
+	return expresion, nil
+
 }
 
 //CountAll Regresa todos los documentos existentes de Mongo (Por Coleccion)
-func CountAll() int {
-	var result int
-	s, Expresions, err := MoConexion.GetColectionMgo(MoVar.ColeccionExpresion)
+func CountAll() (int, error) {
 
+	BasePosGres, err := MoConexion.ConexionPsql()
 	if err != nil {
 		fmt.Println(err)
+		return 0, err
 	}
-	result, err = Expresions.Find(nil).Count()
+
+	Query := fmt.Sprintf(`SELECT count(*) FROM public."%v"`, "REGEXTKUS")
+	stmt, err := BasePosGres.Prepare(Query)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error preparando sentencia", err)
+		return 0, err
 	}
-	s.Close()
-	return result
+	resultSet := stmt.QueryRow()
+
+	var total int
+	err = resultSet.Scan(&total)
+	if err != nil {
+		fmt.Println("Error recuperando numero de registros: ", err)
+		return 0, err
+	}
+
+	stmt.Close()
+	BasePosGres.Close()
+
+	return total, nil
 }
 
 //GetOne Regresa un documento específico de Mongo (Por Coleccion)
-func GetOne(ID bson.ObjectId) ExpresionMgo {
+func GetOne(ID string) (ExpresionMgo, error) {
 	var result ExpresionMgo
-	s, Expresions, err := MoConexion.GetColectionMgo(MoVar.ColeccionExpresion)
+	BasePosGres, err := MoConexion.ConexionPsql()
 	if err != nil {
 		fmt.Println(err)
+		return result, err
 	}
-	err = Expresions.Find(bson.M{"_id": ID}).One(&result)
+
+	Query := fmt.Sprintf(`SELECT * FROM public."%v" WHERE "ID"='%v'`, "REGEXTKUS", ID)
+	fmt.Println("Query One : ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
 	}
-	s.Close()
-	return result
+	resultSet := stmt.QueryRow()
+
+	err = resultSet.Scan(&result.IDExpresion, &result.Clase, &result.Expresion)
+	if err != nil {
+		fmt.Println("Error recuperando numero de registros: ", err)
+		return result, err
+	}
+	result.ID = bson.ObjectIdHex(result.IDExpresion)
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza GetOne")
+	return result, nil
 }
 
 //GetEspecifics rsegresa un conjunto de documentos específicos de Mongo (Por Coleccion)
@@ -128,8 +181,11 @@ func GetIDByField(field string, valor interface{}) bson.ObjectId {
 
 //CargaComboExpresions regresa un combo de Expresion de mongo
 func CargaComboExpresions(ID string) string {
-	Expresions := GetAll()
-
+	Expresions, err := GetAll()
+	if err != nil {
+		fmt.Println("Error al cargar combo expresiones")
+		return ``
+	}
 	templ := ``
 
 	if ID != "" {
@@ -151,7 +207,7 @@ func CargaComboExpresions(ID string) string {
 
 //GeneraTemplatesBusqueda crea templates de tabla de búsqueda
 func GeneraTemplatesBusqueda(Expresions []ExpresionMgo) (string, string) {
-	floats := accounting.Accounting{Symbol: "", Precision: 2}
+	// floats := accounting.Accounting{Symbol: "", Precision: 2}
 	cuerpo := ``
 
 	cabecera := `<tr>
@@ -167,7 +223,7 @@ func GeneraTemplatesBusqueda(Expresions []ExpresionMgo) (string, string) {
 	for k, v := range Expresions {
 		cuerpo += `<tr id = "` + v.ID.Hex() + `" onclick="window.location.href = '/Expresions/detalle/` + v.ID.Hex() + `';">`
 		cuerpo += `<td>` + strconv.Itoa(k+1) + `</td>`
-		cuerpo += `<td>` + string(v.IDExpresion) + `</td>`
+		cuerpo += `<td>` + v.IDExpresion + `</td>`
 
 		cuerpo += `<td>` + v.Clase + `</td>`
 
@@ -200,7 +256,7 @@ func BuscarEnElastic(texto string) *elastic.SearchResult {
 	queryQuotes = queryQuotes.Field("Expresion")
 
 	var docs *elastic.SearchResult
-	var err bool
+	// var err bool
 
 	// docs, err = MoConexion.BuscaElastic(MoVar.TipoExpresion, queryTilde)
 	// if err {

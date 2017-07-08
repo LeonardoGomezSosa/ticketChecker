@@ -18,7 +18,11 @@ var exp []ExpresionesRegulares.ExpresionRegular
 
 //IndexGet renderea al indObtenerExpresionesAlmacenadasex de Almacen
 func IndexGet(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	fmt.Println("Timer.Timer.go: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var vista reporte.ReporteVista
 	Categoria := ExpresionesRegulares.ObtenerCategoriaTexto("surtidor1")
 	fmt.Println(Categoria)
@@ -36,7 +40,11 @@ func IndexGet(ctx *iris.Context) {
 
 //IndexPost regresa la peticon post que se hizo desde el index de Almacen
 func IndexPost(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	fmt.Println("Timer.Timerepr.go: POST")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var rep reporte.Reporte
 	var vista reporte.ReporteVista
 	vista.Estado = false
@@ -67,7 +75,7 @@ func IndexPost(ctx *iris.Context) {
 
 	} else {
 		Categoria := ExpresionesRegulares.ObtenerCategoriaTexto(Entrada)
-
+		fmt.Println("Categoria: ", Categoria)
 		switch Categoria {
 		case "ticket":
 			existeEnReporte, report, err := reporte.ConsultarTicketExisteYRegresarContenidoPorCampo(Entrada, "CodigoBarraTicket", "REPORTE")

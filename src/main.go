@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	"./Controladores/EliminarCuenta"
+	"./Controladores/ExpresionesRegulares"
 	"./Controladores/Login"
 	"./Controladores/Recuperar"
 	"./Controladores/Sesiones"
+	"./Controladores/Surtidor"
 	"./Controladores/Timer"
 
 	"./Modulos/Variables"
@@ -42,6 +44,8 @@ func main() {
 	app.Get("/Login", Login.IndexGet)
 	app.Post("/Login", Login.IndexPost)
 
+	app.Get("/admin", Login.Admin)
+
 	app.Get("/Recuperar", Recuperar.IndexGet)
 	app.Post("/Recuperar", Recuperar.IndexPost)
 
@@ -65,8 +69,8 @@ func main() {
 	//Index (Búsqueda)
 	app.Get("/Expresions", ExpresionControler.IndexGet)
 	app.Post("/Expresions", ExpresionControler.IndexPost)
-	app.Post("/Expresions/search", ExpresionControler.BuscaPagina)
-	app.Post("/Expresions/agrupa", ExpresionControler.MuestraIndexPorGrupo)
+	// app.Post("/Expresions/search", ExpresionControler.BuscaPagina)
+	// app.Post("/Expresions/agrupa", ExpresionControler.MuestraIndexPorGrupo)
 
 	//Alta
 	app.Get("/Expresions/alta", ExpresionControler.AltaGet)

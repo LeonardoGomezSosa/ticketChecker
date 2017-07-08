@@ -2,11 +2,13 @@ package ExpresionControler
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
 
 	"../../Modulos/Session"
+	"../Sesiones"
 
 	"../../Modelos/ExpresionesRegulares"
 	"../../Modulos/Conexiones"
@@ -37,33 +39,32 @@ var arrToMongo []bson.ObjectId
 
 //IndexGet renderea al index de Expresion
 func IndexGet(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.IndexGet: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 
 	var Send ExpresionesRegulares.SExpresion
 
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
+	// var Cabecera, Cuerpo string
+	numeroRegistros, err := (ExpresionesRegulares.CountAll())
+	if err != nil {
+		fmt.Println("Error al contar elementos: ", err)
 	}
 
-	if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
+	paginasTotales = MoGeneral.Totalpaginas(numeroRegistros, limitePorPagina)
+	Expresions, err := ExpresionesRegulares.GetAll()
+	if err != nil {
+		fmt.Println("numeroRegistros: ", numeroRegistros)
 	}
+	arrIDMgo = []bson.ObjectId{}
 
 	var Cabecera, Cuerpo string
-	numeroRegistros = ExpresionesRegulares.CountAll()
-	paginasTotales = MoGeneral.Totalpaginas(numeroRegistros, limitePorPagina)
-	Expresions := ExpresionesRegulares.GetAll()
-
-	arrIDMgo = []bson.ObjectId{}
-	for _, v := range Expresions {
-		arrIDMgo = append(arrIDMgo, v.ID)
-	}
-	arrIDElastic = arrIDMgo
-
 	if numeroRegistros <= limitePorPagina {
 		Cabecera, Cuerpo = ExpresionesRegulares.GeneraTemplatesBusqueda(Expresions[0:numeroRegistros])
 	} else if numeroRegistros >= limitePorPagina {
@@ -72,32 +73,28 @@ func IndexGet(ctx *iris.Context) {
 
 	Send.SIndex.SCabecera = template.HTML(Cabecera)
 	Send.SIndex.SBody = template.HTML(Cuerpo)
-	Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
-	Paginacion := MoGeneral.ConstruirPaginacion(paginasTotales, 1)
-	Send.SIndex.SPaginacion = template.HTML(Paginacion)
+	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
+	// Paginacion := "MoGeneral.ConstruirPaginacion(paginasTotales, 1)"
+	// Send.SIndex.SPaginacion = template.HTML(Paginacion)
 	Send.SIndex.SResultados = true
+	Send.SEstado = true
+	Send.SMsj = "Capturar expresion regular"
 
-	ctx.Render("ExpresionIndex.html", Send)
+	ctx.Render("Expresion/ExpresionIndex.html", Send)
 
 }
 
 //IndexPost regresa la peticon post que se hizo desde el index de Expresion
 func IndexPost(ctx *iris.Context) {
-
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.IndexPost: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send ExpresionesRegulares.SExpresion
-
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	}
-
-	if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-	}
 
 	var Cabecera, Cuerpo string
 
@@ -169,8 +166,8 @@ func IndexPost(ctx *iris.Context) {
 		Send.SMsj = "No se recibió una cadena de consulta, favor de escribirla."
 		Send.SResultados = false
 	}
-	Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
-	ctx.Render("ExpresionIndex.html", Send)
+	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
+	ctx.Render("Expresion/ExpresionIndex.html", Send)
 
 }
 
@@ -178,48 +175,38 @@ func IndexPost(ctx *iris.Context) {
 
 //AltaGet renderea al alta de Expresion
 func AltaGet(ctx *iris.Context) {
-
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.AltaGet: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send ExpresionesRegulares.SExpresion
-
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	} else if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-
-		//####   TÚ CÓDIGO PARA CARGAR DATOS A LA VISTA DE ALTA----> PROGRAMADOR
-
-		ctx.Render("ExpresionAlta.html", Send)
-	} else {
-		ctx.Render("IndexDashboard.html", Send)
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
 	}
+	Send.SEstado = true
+	Send.SMsj = "Listo para dar de alta una nueva expresion regular."
+	Send.SResultados = false
+	Send.Expresion.ID = bson.NewObjectId()
+	Send.EIDExpresionExpresion.IDExpresion = ""
+	Send.EClaseExpresion.Clase = ""
+	Send.EExpresionExpresion.Expresion = ""
+	ctx.Render("Expresion/ExpresionAlta.html", Send)
 
 }
 
 //AltaPost regresa la petición post que se hizo desde el alta de Expresion
 func AltaPost(ctx *iris.Context) {
-
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.AltaGet: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send ExpresionesRegulares.SExpresion
-
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	} else if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-
-		//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
-
-		ctx.Render("ExpresionAlta.html", Send)
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
 	} else {
-		ctx.Render("IndexDashboard.html", Send)
+		ctx.Render("Expresion/ExpresionAlta.html", Send)
 	}
 
 }
@@ -228,7 +215,6 @@ func AltaPost(ctx *iris.Context) {
 
 //EditaGet renderea a la edición de Expresion
 func EditaGet(ctx *iris.Context) {
-
 	var Send ExpresionesRegulares.SExpresion
 
 	name, nivel, id := Session.GetUserName(ctx.Request)
@@ -280,44 +266,63 @@ func EditaPost(ctx *iris.Context) {
 func DetalleGet(ctx *iris.Context) {
 	var Send ExpresionesRegulares.SExpresion
 
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
+	if !sessionUtils.IsStarted(ctx) {
 		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
 	}
 
-	if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
+	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		e, err := ExpresionesRegulares.GetOne(id)
+		if err != nil {
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = ""
+			Send.Expresion.EClaseExpresion.Clase = ""
+			Send.Expresion.EExpresionExpresion.Expresion = ""
+			Send.SMsj = "No se encontró la expresion..."
+			Send.SEstado = false
+		} else {
+			Send.Expresion.ID = e.ID
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = e.IDExpresion
+			Send.Expresion.EClaseExpresion.Clase = e.Clase
+			Send.Expresion.EExpresionExpresion.Expresion = e.Expresion
+			Send.SMsj = "Expresion regular localizada..."
+			Send.SEstado = true
+		}
+	} else {
+		ctx.Redirect("/Expresions", 301)
 	}
 
-	//###### TU CÓDIGO AQUÍ PROGRAMADOR
-
-	ctx.Render("ExpresionDetalle.html", Send)
+	ctx.Render("Expresion/ExpresionDetalle.html", Send)
 }
 
 //DetallePost renderea al index.html
 func DetallePost(ctx *iris.Context) {
 	var Send ExpresionesRegulares.SExpresion
 
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
+	if !sessionUtils.IsStarted(ctx) {
 		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
 	}
 
-	if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
+	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		Expresions, err := ExpresionesRegulares.GetOne(id)
+		if err != nil {
+			Send.Expresion.ID = Expresions.ID
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = Expresions.IDExpresion
+			Send.Expresion.EClaseExpresion.Clase = Expresions.Clase
+			Send.Expresion.EExpresionExpresion.Expresion = Expresions.Expresion
+			Send.SMsj = "Expresion regular localizada..."
+			Send.SEstado = true
+		} else {
+			Send.SMsj = "No se encontró la expresion..."
+			Send.SEstado = false
+		}
+	} else {
+		ctx.Redirect("/Expresions", 301)
 	}
 
-	//###### TU CÓDIGO AQUÍ PROGRAMADOR
-
-	ctx.Render("ExpresionDetalle.html", Send)
+	ctx.Render("Expresion/ExpresionDetalle.html", Send)
 }
 
 //####################< RUTINAS ADICIONALES >##########################
@@ -367,7 +372,7 @@ func BuscaPagina(ctx *iris.Context) {
 
 	}
 
-	Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
+	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
 	Send.SEstado = true
 
 	jData, _ := json.Marshal(Send)
@@ -459,7 +464,7 @@ func MuestraIndexPorGrupo(ctx *iris.Context) {
 
 		Send.SIndex.SRMsj = "No se encontraron resultados para: " + cadenaBusqueda + " ."
 	}
-	Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
+	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
 	Send.SEstado = true
 
 	jData, _ := json.Marshal(Send)
