@@ -17,6 +17,7 @@ import (
 //SurtidorMgo estructura de Surtidors mongo
 type SurtidorMgo struct {
 	ID          bson.ObjectId `bson:"_id,omitempty"`
+	IDSurtidor  string        `bson:"ID,omitempty"`
 	CodigoBarra string        `bson:"CodigoBarra"`
 	Usuario     string        `bson:"Usuario"`
 }
@@ -30,49 +31,241 @@ type SurtidorElastic struct {
 //#########################< FUNCIONES GENERALES MGO >###############################
 
 //GetAll Regresa todos los documentos existentes de Mongo (Por Coleccion)
-func GetAll() []SurtidorMgo {
+func GetAll() ([]SurtidorMgo, error) {
 	var result []SurtidorMgo
-	s, Surtidors, err := MoConexion.GetColectionMgo(MoVar.ColeccionSurtidor)
+	BasePosGres, err := MoConexion.ConexionPsql()
 	if err != nil {
 		fmt.Println(err)
+		return result, err
 	}
-	err = Surtidors.Find(nil).All(&result)
+
+	Query := fmt.Sprintf(`SELECT "ID", "CodigoBarra", "Usuario" FROM public."%v"`, "SURTIDORES")
+	fmt.Println("Query Surtidores GetAll: ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
 	if err != nil {
 		fmt.Println(err)
+		return result, err
 	}
-	s.Close()
-	return result
+	resultSet, err := stmt.Query()
+	if err != nil {
+		fmt.Println(err)
+		return result, err
+	}
+	var aux SurtidorMgo
+	for resultSet.Next() {
+		err := resultSet.Scan(&aux.IDSurtidor, &aux.Usuario, &aux.CodigoBarra)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		} else {
+			aux.ID = bson.ObjectIdHex(aux.IDSurtidor)
+			result = append(result, aux)
+		}
+
+	}
+
+	resultSet.Close()
+	stmt.Close()
+	BasePosGres.Close()
+
+	return result, nil
 }
 
 //CountAll Regresa todos los documentos existentes de Mongo (Por Coleccion)
-func CountAll() int {
-	var result int
-	s, Surtidors, err := MoConexion.GetColectionMgo(MoVar.ColeccionSurtidor)
+func CountAll() (int, error) {
+
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+
+	Query := fmt.Sprintf(`SELECT count(*) FROM public."%v"`, "SURTIDORES")
+	stmt, err := BasePosGres.Prepare(Query)
+	fmt.Println("Query Count(*) Surtidores: ", Query)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error preparando sentencia", err)
+		return 0, err
 	}
-	result, err = Surtidors.Find(nil).Count()
+	resultSet := stmt.QueryRow()
+
+	var total int
+	err = resultSet.Scan(&total)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error recuperando numero de registros: ", err)
+		return 0, err
 	}
-	s.Close()
-	return result
+
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Total Surtidores: ", total)
+	return total, nil
 }
 
 //GetOne Regresa un documento específico de Mongo (Por Coleccion)
-func GetOne(ID bson.ObjectId) SurtidorMgo {
+func GetOne(ID string) (SurtidorMgo, error) {
 	var result SurtidorMgo
-	s, Surtidors, err := MoConexion.GetColectionMgo(MoVar.ColeccionSurtidor)
+	BasePosGres, err := MoConexion.ConexionPsql()
 	if err != nil {
 		fmt.Println(err)
+		return result, err
 	}
-	err = Surtidors.Find(bson.M{"_id": ID}).One(&result)
+
+	Query := fmt.Sprintf(`SELECT * FROM public."%v" WHERE "ID"='%v' GROUP BY "ID"`, "SURTIDORES", ID)
+	fmt.Println("Query One : ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
+	}
+	resultSet := stmt.QueryRow()
+	err = resultSet.Scan(&result.IDSurtidor, &result.Usuario, &result.CodigoBarra)
+	if err != nil {
+		fmt.Println("Error recuperando numero de registros: ", err)
+		return result, err
+	}
+
+	result.ID = bson.ObjectIdHex(result.IDSurtidor)
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza GetOne")
+	return result, nil
+}
+
+//ExistOne Regresa un documento específico de SQL (Por Coleccion)
+func ExistOne(ID string) (bool, error) {
+	var result bool
+	result = false
+	BasePosGres, err := MoConexion.ConexionPsql()
 	if err != nil {
 		fmt.Println(err)
+		return result, err
 	}
-	s.Close()
-	return result
+
+	Query := fmt.Sprintf(`SELECT COUNT(*) FROM public."%v" WHERE "ID"='%v'`, "SURTIDORES", ID)
+	fmt.Println("Query ExistOne: ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
+	}
+
+	resultSet := stmt.QueryRow()
+	i := 0
+	err = resultSet.Scan(&i)
+	if i > 0 {
+		result = true
+	}
+	if err != nil {
+		fmt.Println("Error recuperando numero de registros: ", err)
+		return result, err
+	}
+
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza ExistOne")
+	return result, nil
+}
+
+//InsertOne Inserta un documento específico de SQL (Por Coleccion)
+func (me *SurtidorMgo) InsertOne() (string, error) {
+	var result string
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return result, err
+	}
+
+	Query := fmt.Sprintf(`INSERT INTO public."%v"(
+            "ID", "Usuario", "CodigoBarra")
+    VALUES ('%v', '%v', '%v') RETURNING "ID"`,
+		"SURTIDORES", me.IDSurtidor, me.Usuario, me.CodigoBarra)
+
+	fmt.Println("Query Update One : ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
+	}
+	resultSet := stmt.QueryRow()
+
+	err = resultSet.Scan(&result)
+	if err != nil {
+		fmt.Println("Error recuperando ultimo actualizado: ", err)
+		return result, err
+	}
+
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza InsertOne", me)
+	return result, nil
+}
+
+//ModifyOne Modifica un documento específico de SQL (Por Coleccion)
+func (me *SurtidorMgo) ModifyOne() (string, error) {
+	var result string
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return result, err
+	}
+
+	Query := fmt.Sprintf(`UPDATE public."%v"
+							SET  "Usuario"='%v', "CodigoBarra"='%v'
+							WHERE "ID"='%v' RETURNING "ID"`,
+		"SURTIDORES", me.Usuario, me.CodigoBarra, me.IDSurtidor)
+
+	fmt.Println("Query Update One : ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
+	}
+	resultSet := stmt.QueryRow()
+
+	err = resultSet.Scan(&result)
+	if err != nil {
+		fmt.Println("Error recuperando ultimo actualizado: ", err)
+		return result, err
+	}
+
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza ModifyOne", me)
+	return result, nil
+}
+
+//DeleteOne Elimina un documento específico de SQL (Por Coleccion)
+func (me *SurtidorMgo) DeleteOne() (string, error) {
+	var result string
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return result, err
+	}
+
+	Query := fmt.Sprintf(`DELETE FROM  public."%v"
+							WHERE "ID"='%v' RETURNING "ID"`,
+		"Surtidores", me.IDSurtidor)
+
+	fmt.Println("Query DeleteOne : ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
+	}
+	resultSet := stmt.QueryRow()
+
+	err = resultSet.Scan(&result)
+	if err != nil {
+		fmt.Println("Error recuperando ultimo eliminado: ", err)
+		return result, err
+	}
+
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza DeleteOne", me)
+	return result, nil
 }
 
 //GetEspecifics rsegresa un conjunto de documentos específicos de Mongo (Por Coleccion)
@@ -125,7 +318,7 @@ func GetIDByField(field string, valor interface{}) bson.ObjectId {
 
 //CargaComboSurtidors regresa un combo de Surtidor de mongo
 func CargaComboSurtidors(ID string) string {
-	Surtidors := GetAll()
+	Surtidors, _ := GetAll()
 
 	templ := ``
 
@@ -151,10 +344,8 @@ func GeneraTemplatesBusqueda(Surtidors []SurtidorMgo) (string, string) {
 	cuerpo := ``
 
 	cabecera := `<tr>
-			<th>#</th>
-			
+			<th>#</th>	
 				<th>CodigoBarra</th>					
-				
 				<th>Usuario</th>					
 				</tr>`
 
@@ -167,7 +358,6 @@ func GeneraTemplatesBusqueda(Surtidors []SurtidorMgo) (string, string) {
 
 		cuerpo += `</tr>`
 	}
-
 	return cabecera, cuerpo
 }
 

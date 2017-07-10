@@ -2,6 +2,7 @@ package SurtidorControler
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -25,7 +26,7 @@ var paginasTotales int
 var NumPagina int
 
 //limitePorPagina limite de registros a mostrar en la pagina
-var limitePorPagina = 5
+var limitePorPagina = 10
 
 //IDElastic id obtenido de Elastic
 var IDElastic bson.ObjectId
@@ -37,32 +38,21 @@ var arrToMongo []bson.ObjectId
 
 //IndexGet renderea al index de Surtidor
 func IndexGet(ctx *iris.Context) {
-
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Surtidors.SurtidorsControler.go.IndexGet: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send Surtidor.SSurtidor
 
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	}
-
-	if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-	}
-
 	var Cabecera, Cuerpo string
-	numeroRegistros = Surtidor.CountAll()
+	numeroRegistros, _ = Surtidor.CountAll()
 	paginasTotales = MoGeneral.Totalpaginas(numeroRegistros, limitePorPagina)
-	Surtidors := Surtidor.GetAll()
+	Surtidors, err := Surtidor.GetAll()
 
-	arrIDMgo = []bson.ObjectId{}
-	for _, v := range Surtidors {
-		arrIDMgo = append(arrIDMgo, v.ID)
+	if err != nil {
+		fmt.Println("Error al obtener surtidores: ", Surtidors)
 	}
-	arrIDElastic = arrIDMgo
 
 	if numeroRegistros <= limitePorPagina {
 		Cabecera, Cuerpo = Surtidor.GeneraTemplatesBusqueda(Surtidors[0:numeroRegistros])
@@ -72,32 +62,23 @@ func IndexGet(ctx *iris.Context) {
 
 	Send.SIndex.SCabecera = template.HTML(Cabecera)
 	Send.SIndex.SBody = template.HTML(Cuerpo)
-	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
 	Paginacion := MoGeneral.ConstruirPaginacion(paginasTotales, 1)
 	Send.SIndex.SPaginacion = template.HTML(Paginacion)
-	Send.SIndex.SResultados = true
 
-	ctx.Render("SurtidorIndex.html", Send)
+	Send.SIndex.SResultados = true
+	Send.SEstado = true
+	ctx.Render("Surtidor/SurtidorIndex.html", Send)
 
 }
 
 //IndexPost regresa la peticon post que se hizo desde el index de Surtidor
 func IndexPost(ctx *iris.Context) {
-
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Surtidors.SurtidorsControler.go.IndexPost: POST")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send Surtidor.SSurtidor
-
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	}
-
-	if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-	}
 
 	var Cabecera, Cuerpo string
 
@@ -170,7 +151,7 @@ func IndexPost(ctx *iris.Context) {
 		Send.SResultados = false
 	}
 	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
-	ctx.Render("SurtidorIndex.html", Send)
+	ctx.Render("Surtidor/SurtidorIndex.html", Send)
 
 }
 
@@ -178,99 +159,179 @@ func IndexPost(ctx *iris.Context) {
 
 //AltaGet renderea al alta de Surtidor
 func AltaGet(ctx *iris.Context) {
-
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Surtidors.SurtidorsControler.go.AltaGet: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send Surtidor.SSurtidor
+	Send.SEstado = true
+	Send.SMsj = "Listo para cargar"
+	Send.SurtidorSS.ID = bson.NewObjectId()
 
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	} else if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-
-		//####   TÚ CÓDIGO PARA CARGAR DATOS A LA VISTA DE ALTA----> PROGRAMADOR
-
-		ctx.Render("SurtidorAlta.html", Send)
-	} else {
-		ctx.Render("IndexDashboard.html", Send)
-	}
+	fmt.Println(Send)
+	ctx.Render("Surtidor/SurtidorAlta.html", Send)
 
 }
 
 //AltaPost regresa la petición post que se hizo desde el alta de Surtidor
 func AltaPost(ctx *iris.Context) {
-
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Surtidors.SurtidorsControler.go.AltaPost: POST")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send Surtidor.SSurtidor
 
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
+	//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
 
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	} else if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
+	ID := MoGeneral.LimpiarCadena(ctx.FormValue("ID"))
+	Usuario := MoGeneral.LimpiarCadena(ctx.FormValue("Usuario"))
+	CodigoBarra := MoGeneral.LimpiarCadena(ctx.FormValue("CodigoBarra"))
 
-		//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
-
-		ctx.Render("SurtidorAlta.html", Send)
+	IDExist, err := Surtidor.ExistOne(ID)
+	fmt.Println("Surtidor", ID, " existe: ", IDExist)
+	if err != nil {
+		Send.SMsj = fmt.Sprintf("No se pudo buscar en la base de datos, error: %v.", err)
+		Send.SEstado = false
+		fmt.Println("error al comprobar existencia")
 	} else {
-		ctx.Render("IndexDashboard.html", Send)
+		if IDExist {
+			Send.SMsj = fmt.Sprintf("El ID existe en la base de datos.")
+			Send.SEstado = false
+			Send.SurtidorSS.ID = bson.NewObjectId()
+			fmt.Println("Elemento ya existe en la base de datos")
+		} else {
+			if MoGeneral.CadenaVacia(ID) || MoGeneral.CadenaVacia(Usuario) || MoGeneral.CadenaVacia(CodigoBarra) {
+				Send.SMsj = fmt.Sprintf("Algun dato esta vacio.")
+				Send.SEstado = false
+				Send.SurtidorSS.ID = bson.ObjectIdHex(ID)
+				Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = CodigoBarra
+				Send.SurtidorSS.EUsuarioSurtidor.Usuario = Usuario
+				fmt.Println("Datos vacios")
+			} else {
+				var e Surtidor.SurtidorMgo
+				e.IDSurtidor = ID
+				e.Usuario = Usuario
+				e.CodigoBarra = CodigoBarra
+				e.ID = bson.ObjectIdHex(ID)
+				fmt.Println("Objeto a insertar: ", e)
+				rs, err := e.InsertOne()
+				if err != nil {
+					Send.SMsj = fmt.Sprintf("Ocurrio un problema al insertar objeto. Intente mas tarde")
+					Send.SEstado = false
+				} else {
+					Send.SMsj = fmt.Sprintf("Objeto insertado Correctamente: %v.", rs)
+					Send.SEstado = true
+				}
+				Send.SurtidorSS.ID = e.ID
+				Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
+				Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
+			}
+		}
 	}
+	fmt.Println(Send)
 
+	ctx.Render("Surtidor/SurtidorAlta.html", Send)
 }
 
 //###########################< EDICION >###############################
 
 //EditaGet renderea a la edición de Surtidor
 func EditaGet(ctx *iris.Context) {
-
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Surtidors.SurtidorsControler.go.EditaGet: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send Surtidor.SSurtidor
-
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	} else if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-
-		//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
-
-		ctx.Render("SurtidorEdita.html", Send)
+	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		e, err := Surtidor.GetOne(id)
+		if err != nil {
+			Send.SEstado = false
+			Send.SurtidorSS.ID = bson.ObjectIdHex(id)
+			Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
+			Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
+			Send.SMsj = "No se encontró El usuario..."
+			Send.SEstado = false
+		} else {
+			Send.SEstado = false
+			Send.SurtidorSS.ID = bson.ObjectIdHex(id)
+			Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
+			Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
+			Send.SMsj = fmt.Sprintf("Usuario %v:%v localizado...", e.IDSurtidor, e.Usuario)
+			Send.SEstado = true
+		}
 	} else {
-		ctx.Render("IndexDashboard.html", Send)
+		ctx.Redirect("/Surtidors", 301)
 	}
+
+	ctx.Render("Surtidor/SurtidorEdita.html", Send)
 
 }
 
 //EditaPost regresa el resultado de la petición post generada desde la edición de Surtidor
 func EditaPost(ctx *iris.Context) {
 
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Surtidors.SurtidorsControler.go.AltaPost: POST")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send Surtidor.SSurtidor
 
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
+	//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
 
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	} else if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
+	ID := MoGeneral.LimpiarCadena(ctx.FormValue("ID"))
+	Usuario := MoGeneral.LimpiarCadena(ctx.FormValue("Usuario"))
+	CodigoBarra := MoGeneral.LimpiarCadena(ctx.FormValue("CodigoBarra"))
 
-		//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
-
-		ctx.Render("SurtidorEdita.html", Send)
+	IDExist, err := Surtidor.ExistOne(ID)
+	fmt.Println("Surtidor", ID, " existe: ", IDExist)
+	if err != nil {
+		Send.SMsj = fmt.Sprintf("No se pudo buscar en la base de datos, error: %v.", err)
+		Send.SEstado = false
+		fmt.Println("error al comprobar existencia")
 	} else {
-		ctx.Render("IndexDashboard.html", Send)
+		if IDExist {
+			Send.SMsj = fmt.Sprintf("El ID existe en la base de datos.")
+			Send.SEstado = false
+			Send.SurtidorSS.ID = bson.NewObjectId()
+			fmt.Println("Elemento ya existe en la base de datos")
+		} else {
+			if MoGeneral.CadenaVacia(ID) || MoGeneral.CadenaVacia(Usuario) || MoGeneral.CadenaVacia(CodigoBarra) {
+				Send.SMsj = fmt.Sprintf("Algun dato esta vacio.")
+				Send.SEstado = false
+				Send.SurtidorSS.ID = bson.ObjectIdHex(ID)
+				Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = CodigoBarra
+				Send.SurtidorSS.EUsuarioSurtidor.Usuario = Usuario
+				fmt.Println("Datos vacios")
+			} else {
+				var e Surtidor.SurtidorMgo
+				e.IDSurtidor = ID
+				e.Usuario = Usuario
+				e.CodigoBarra = CodigoBarra
+				e.ID = bson.ObjectIdHex(ID)
+				fmt.Println("Objeto a insertar: ", e)
+				rs, err := e.InsertOne()
+				if err != nil {
+					Send.SMsj = fmt.Sprintf("Ocurrio un problema al insertar objeto. Intente mas tarde")
+					Send.SEstado = false
+				} else {
+					Send.SMsj = fmt.Sprintf("Objeto insertado Correctamente: %v.", rs)
+					Send.SEstado = true
+				}
+				Send.SurtidorSS.ID = e.ID
+				Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
+				Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
+			}
+		}
 	}
+	fmt.Println(Send)
+
+	ctx.Render("Surtidor/SurtidorEdita.html", Send)
 
 }
 
@@ -278,24 +339,37 @@ func EditaPost(ctx *iris.Context) {
 
 //DetalleGet renderea al index.html
 func DetalleGet(ctx *iris.Context) {
+
 	var Send Surtidor.SSurtidor
 
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	}
-
-	if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-	}
+	// if !sessionUtils.IsStarted(ctx) {
+	// 	http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
+	// }
 
 	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		e, err := Surtidor.GetOne(id)
+		if err != nil {
+			Send.SEstado = false
+			Send.SurtidorSS.ID = bson.ObjectIdHex(id)
+			Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
+			Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
+			Send.SMsj = "No se encontró El usuario..."
+			Send.SEstado = false
+		} else {
+			Send.SEstado = false
+			Send.SurtidorSS.ID = bson.ObjectIdHex(id)
+			Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
+			Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
+			Send.SMsj = fmt.Sprintf("Usuario %v:%v localizado...", e.IDSurtidor, e.Usuario)
+			Send.SEstado = true
+		}
+	} else {
+		ctx.Redirect("/Surtidors", 301)
+	}
 
-	ctx.Render("SurtidorDetalle.html", Send)
+	ctx.Render("Surtidor/SurtidorDetalle.html", Send)
 }
 
 //DetallePost renderea al index.html

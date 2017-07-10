@@ -63,14 +63,31 @@ func main() {
 
 	app.Get("/Surtidors", SurtidorControler.IndexGet)
 	app.Post("/Surtidors", SurtidorControler.IndexPost)
+
+	//Alta
+	app.Get("/Surtidors/alta", SurtidorControler.AltaGet)
+	app.Post("/Surtidors/alta", SurtidorControler.AltaPost)
+
+	//Detalle
+	app.Get("/Surtidors/detalle", SurtidorControler.DetalleGet)
+	app.Post("/Surtidors/detalle", SurtidorControler.DetallePost)
+	app.Get("/Surtidors/detalle/:ID", SurtidorControler.DetalleGet)
+	app.Post("/Surtidors/detalle/:ID", SurtidorControler.DetallePost)
+
+	//Edicion
+	app.Get("/Surtidors/edita", SurtidorControler.EditaGet)
+	app.Post("/Surtidors/edita", SurtidorControler.EditaPost)
+	app.Get("/Surtidors/edita/:ID", SurtidorControler.EditaGet)
+	app.Post("/Surtidors/edita/:ID", SurtidorControler.EditaPost)
+
 	app.Post("/Surtidors/search", SurtidorControler.BuscaPagina)
 	app.Post("/Surtidors/agrupa", SurtidorControler.MuestraIndexPorGrupo)
 
 	//Index (Búsqueda)
 	app.Get("/Expresions", ExpresionControler.IndexGet)
 	app.Post("/Expresions", ExpresionControler.IndexPost)
-	// app.Post("/Expresions/search", ExpresionControler.BuscaPagina)
-	// app.Post("/Expresions/agrupa", ExpresionControler.MuestraIndexPorGrupo)
+	app.Post("/Expresions/search", ExpresionControler.BuscaPagina)
+	app.Post("/Expresions/agrupa", ExpresionControler.MuestraIndexPorGrupo)
 
 	//Alta
 	app.Get("/Expresions/alta", ExpresionControler.AltaGet)
@@ -87,6 +104,12 @@ func main() {
 	app.Post("/Expresions/detalle", ExpresionControler.DetallePost)
 	app.Get("/Expresions/detalle/:ID", ExpresionControler.DetalleGet)
 	app.Post("/Expresions/detalle/:ID", ExpresionControler.DetallePost)
+
+	//Elimina
+	app.Get("/Expresions/Elimina", ExpresionControler.EliminaGet)
+	app.Post("/Expresions/Elimina", ExpresionControler.EliminaPost)
+	app.Get("/Expresions/Elimina/:ID", ExpresionControler.EliminaGet)
+	app.Post("/Expresions/Elimina/:ID", ExpresionControler.EliminaPost)
 
 	//###################### Listen Server #############################
 

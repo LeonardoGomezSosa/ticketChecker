@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"../../Modulos/Session"
 	"../Sesiones"
 
 	"../../Modelos/ExpresionesRegulares"
@@ -27,11 +26,12 @@ var paginasTotales int
 var NumPagina int
 
 //limitePorPagina limite de registros a mostrar en la pagina
-var limitePorPagina = 5
+var limitePorPagina = 10
 
 //IDElastic id obtenido de Elastic
 var IDElastic bson.ObjectId
 var arrIDMgo []bson.ObjectId
+var arrID []string
 var arrIDElastic []bson.ObjectId
 var arrToMongo []bson.ObjectId
 
@@ -51,20 +51,11 @@ func IndexGet(ctx *iris.Context) {
 
 	var Send ExpresionesRegulares.SExpresion
 
-	// var Cabecera, Cuerpo string
-	numeroRegistros, err := (ExpresionesRegulares.CountAll())
-	if err != nil {
-		fmt.Println("Error al contar elementos: ", err)
-	}
-
-	paginasTotales = MoGeneral.Totalpaginas(numeroRegistros, limitePorPagina)
-	Expresions, err := ExpresionesRegulares.GetAll()
-	if err != nil {
-		fmt.Println("numeroRegistros: ", numeroRegistros)
-	}
-	arrIDMgo = []bson.ObjectId{}
-
 	var Cabecera, Cuerpo string
+	numeroRegistros, _ := (ExpresionesRegulares.CountAll())
+	paginasTotales = MoGeneral.Totalpaginas(numeroRegistros, limitePorPagina)
+	Expresions, _ := ExpresionesRegulares.GetAll()
+
 	if numeroRegistros <= limitePorPagina {
 		Cabecera, Cuerpo = ExpresionesRegulares.GeneraTemplatesBusqueda(Expresions[0:numeroRegistros])
 	} else if numeroRegistros >= limitePorPagina {
@@ -73,12 +64,11 @@ func IndexGet(ctx *iris.Context) {
 
 	Send.SIndex.SCabecera = template.HTML(Cabecera)
 	Send.SIndex.SBody = template.HTML(Cuerpo)
-	// Send.SIndex.SGrupo = template.HTML(CargaCombos.CargaComboMostrarEnIndex(limitePorPagina))
-	// Paginacion := "MoGeneral.ConstruirPaginacion(paginasTotales, 1)"
-	// Send.SIndex.SPaginacion = template.HTML(Paginacion)
+	Paginacion := MoGeneral.ConstruirPaginacion(paginasTotales, 1)
+	Send.SIndex.SPaginacion = template.HTML(Paginacion)
+
 	Send.SIndex.SResultados = true
 	Send.SEstado = true
-	Send.SMsj = "Capturar expresion regular"
 
 	ctx.Render("Expresion/ExpresionIndex.html", Send)
 
@@ -181,14 +171,14 @@ func AltaGet(ctx *iris.Context) {
 	fmt.Println("=================================")
 	fmt.Println("=================================")
 	var Send ExpresionesRegulares.SExpresion
-	if !sessionUtils.IsStarted(ctx) {
-		ctx.Redirect("/Login", 301)
-	}
+	// if !sessionUtils.IsStarted(ctx) {
+	// 	ctx.Redirect("/Login", 301)
+	// }
 	Send.SEstado = true
-	Send.SMsj = "Listo para dar de alta una nueva expresion regular."
+	Send.SMsj = "Listo para dar de alta una nueva expresion regular, se genera un ID Aleatorio."
 	Send.SResultados = false
 	Send.Expresion.ID = bson.NewObjectId()
-	Send.EIDExpresionExpresion.IDExpresion = ""
+	Send.EIDExpresionExpresion.IDExpresion = Send.Expresion.ID.Hex()
 	Send.EClaseExpresion.Clase = ""
 	Send.EExpresionExpresion.Expresion = ""
 	ctx.Render("Expresion/ExpresionAlta.html", Send)
@@ -203,11 +193,47 @@ func AltaPost(ctx *iris.Context) {
 	fmt.Println("=================================")
 	fmt.Println("=================================")
 	var Send ExpresionesRegulares.SExpresion
-	if !sessionUtils.IsStarted(ctx) {
-		ctx.Redirect("/Login", 301)
+	id := MoGeneral.LimpiarCadena(ctx.FormValue("IDExpresion"))
+	Clase := MoGeneral.LimpiarCadena(ctx.FormValue("Clase"))
+	Expresion := MoGeneral.LimpiarCadena(ctx.FormValue("Expresion"))
+
+	IDExist, err := ExpresionesRegulares.ExistOne(id)
+
+	if err != nil {
+		Send.SMsj = fmt.Sprintf("No se pudo buscar en la base de datos, error: %v.", err)
+		Send.SEstado = false
 	} else {
-		ctx.Render("Expresion/ExpresionAlta.html", Send)
+		if IDExist {
+			Send.SMsj = fmt.Sprintf("El ID existe en la base de datos.")
+			Send.SEstado = false
+		} else {
+			if MoGeneral.CadenaVacia(id) || MoGeneral.CadenaVacia(Clase) || MoGeneral.CadenaVacia(Expresion) {
+				Send.SMsj = fmt.Sprintf("Algun dato esta vacio.")
+				Send.SEstado = false
+			} else {
+				var e ExpresionesRegulares.ExpresionMgo
+				e.IDExpresion = id
+				e.Clase = Clase
+				e.Expresion = Expresion
+				e.ID = bson.ObjectIdHex(id)
+
+				rs, err := e.InsertOne()
+				if err != nil {
+					Send.SMsj = fmt.Sprintf("Ocurrio un problema al insertar objeto. Intente mas tarde")
+					Send.SEstado = false
+				} else {
+					Send.SMsj = fmt.Sprintf("Objeto insertado Correctamente: %v.", rs)
+					Send.SEstado = true
+				}
+				Send.Expresion.ID = e.ID
+				Send.Expresion.EIDExpresionExpresion.IDExpresion = e.IDExpresion
+				Send.Expresion.EClaseExpresion.Clase = e.Clase
+				Send.Expresion.EExpresionExpresion.Expresion = e.Expresion
+			}
+		}
 	}
+
+	ctx.Render("Expresion/ExpresionAlta.html", Send)
 
 }
 
@@ -215,48 +241,89 @@ func AltaPost(ctx *iris.Context) {
 
 //EditaGet renderea a la edición de Expresion
 func EditaGet(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.EditaGet: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send ExpresionesRegulares.SExpresion
-
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
-
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	} else if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-
-		//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
-
-		ctx.Render("ExpresionEdita.html", Send)
+	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		e, err := ExpresionesRegulares.GetOne(id)
+		if err != nil {
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = ""
+			Send.Expresion.EClaseExpresion.Clase = ""
+			Send.Expresion.EExpresionExpresion.Expresion = ""
+			Send.SMsj = "No se encontró la expresion..."
+			Send.SEstado = false
+		} else {
+			Send.Expresion.ID = e.ID
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = e.IDExpresion
+			Send.Expresion.EClaseExpresion.Clase = e.Clase
+			Send.Expresion.EExpresionExpresion.Expresion = e.Expresion
+			Send.SMsj = "Expresion regular localizada..."
+			Send.SEstado = true
+		}
 	} else {
-		ctx.Render("IndexDashboard.html", Send)
+		ctx.Redirect("/Expresions", 301)
 	}
+	ctx.Render("Expresion/ExpresionEdita.html", Send)
 
 }
 
 //EditaPost regresa el resultado de la petición post generada desde la edición de Expresion
 func EditaPost(ctx *iris.Context) {
-
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.EditaPost: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send ExpresionesRegulares.SExpresion
+	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		e, err := ExpresionesRegulares.GetOne(id)
 
-	name, nivel, id := Session.GetUserName(ctx.Request)
-	Send.SSesion.Name = name
-	Send.SSesion.Nivel = nivel
-	Send.SSesion.IDS = id
+		if err != nil {
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = ""
+			Send.Expresion.EClaseExpresion.Clase = ""
+			Send.Expresion.EExpresionExpresion.Expresion = ""
+			Send.SMsj = "No se encontró la expresion..."
+			Send.SEstado = false
+		} else {
+			Clase := MoGeneral.LimpiarCadena(ctx.FormValue("Clase"))
+			Expresion := MoGeneral.LimpiarCadena(ctx.FormValue("Expresion"))
 
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	} else if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-
-		//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
-
-		ctx.Render("ExpresionEdita.html", Send)
+			if MoGeneral.CadenaVacia(Clase) || MoGeneral.CadenaVacia(Expresion) {
+				Send.SMsj = "No se puede modificar el elemento indicado, no se aceptan campos Vacios"
+				Send.Expresion.EIDExpresionExpresion.IDExpresion = e.IDExpresion
+				Send.Expresion.EClaseExpresion.Clase = e.Clase
+				Send.Expresion.EExpresionExpresion.Expresion = e.Expresion
+				Send.SEstado = false
+			} else {
+				Send.Expresion.ID = e.ID
+				Send.Expresion.EIDExpresionExpresion.IDExpresion = e.IDExpresion
+				Send.Expresion.EClaseExpresion.Clase = Clase
+				Send.Expresion.EExpresionExpresion.Expresion = Expresion
+				Send.SMsj = "Modificar Expresion regular localizada..."
+				e.Clase = Clase
+				e.Expresion = Expresion
+				elem, err := e.ModifyOne()
+				if err != nil {
+					Send.SMsj = fmt.Sprintf("Error al actualizar el elemento: %v.", err)
+					Send.SEstado = false
+				} else {
+					Send.SMsj = fmt.Sprintf("Actualizado el elemento %v.", elem)
+					Send.SEstado = true
+					// ctx.Redirect(fmt.Sprintf("/Expresions/detalle/%v", e.IDExpresion), 301)
+				}
+			}
+		}
 	} else {
-		ctx.Render("IndexDashboard.html", Send)
+		ctx.Redirect("/Expresions", 301)
 	}
+	ctx.Render("Expresion/ExpresionEdita.html", Send)
 
 }
 
@@ -325,48 +392,123 @@ func DetallePost(ctx *iris.Context) {
 	ctx.Render("Expresion/ExpresionDetalle.html", Send)
 }
 
+// eliminar
+
+//EliminaGet renderea a la edición de Expresion
+func EliminaGet(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.EliminaGet: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	var Send ExpresionesRegulares.SExpresion
+	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		e, err := ExpresionesRegulares.GetOne(id)
+		if err != nil {
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = ""
+			Send.Expresion.EClaseExpresion.Clase = ""
+			Send.Expresion.EExpresionExpresion.Expresion = ""
+			Send.SMsj = "No se encontró la expresion..."
+			Send.SEstado = false
+		} else {
+			Send.Expresion.ID = e.ID
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = e.IDExpresion
+			Send.Expresion.EClaseExpresion.Clase = e.Clase
+			Send.Expresion.EExpresionExpresion.Expresion = e.Expresion
+			rs, err := e.DeleteOne()
+			if err != nil {
+				Send.SMsj = fmt.Sprintf("Error al eliminar el elemento %v: %v.", id, e.Expresion)
+				Send.SEstado = false
+			} else {
+				Send.SMsj = fmt.Sprintf("Expresion regular: %v con  ID: %v ha sido eliminada.", e.Expresion, rs)
+				Send.SEstado = true
+			}
+		}
+	} else {
+		ctx.Redirect("/Expresions", 301)
+	}
+	ctx.Render("Expresion/ExpresionDetalle.html", Send)
+
+}
+
+//EliminaPost renderea a la edición de Expresion
+func EliminaPost(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.EliminaPost: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	var Send ExpresionesRegulares.SExpresion
+	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		e, err := ExpresionesRegulares.GetOne(id)
+		if err != nil {
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = ""
+			Send.Expresion.EClaseExpresion.Clase = ""
+			Send.Expresion.EExpresionExpresion.Expresion = ""
+			Send.SMsj = "No se encontró la expresion..."
+			Send.SEstado = false
+		} else {
+			Send.Expresion.ID = e.ID
+			Send.Expresion.EIDExpresionExpresion.IDExpresion = e.IDExpresion
+			Send.Expresion.EClaseExpresion.Clase = e.Clase
+			Send.Expresion.EExpresionExpresion.Expresion = e.Expresion
+			rs, err := e.DeleteOne()
+			if err != nil {
+				Send.SMsj = fmt.Sprintf("Error al eliminar el elemento %v: %v.", id, e.Expresion)
+				Send.SEstado = false
+			} else {
+				Send.SMsj = fmt.Sprintf("Expresion regular: %v con  ID: %v ha sido eliminada.", e.Expresion, rs)
+				Send.SEstado = true
+			}
+		}
+	} else {
+		ctx.Redirect("/Expresions", 301)
+	}
+	ctx.Render("Expresion/ExpresionDetalle.html", Send)
+
+}
+
 //####################< RUTINAS ADICIONALES >##########################
 
 //BuscaPagina regresa la tabla de busqueda y su paginacion en el momento de especificar página
 func BuscaPagina(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.BuscaPagina: Pos")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var Send ExpresionesRegulares.SExpresion
-
-	Pagina := ctx.FormValue("Pag")
+	Pagina := MoGeneral.LimpiarCadena(ctx.FormValue("Pag"))
 	if Pagina != "" {
 		num, _ := strconv.Atoi(Pagina)
+		fmt.Println("Pagina: ", num)
+		if num > paginasTotales {
+			num = paginasTotales
+		}
 		if num == 0 {
 			num = 1
 		}
+
+		fmt.Println("Pagina: ", num)
+
 		NumPagina = num
-		skip := limitePorPagina * (NumPagina - 1)
-		limite := skip + limitePorPagina
-
-		arrToMongo = []bson.ObjectId{}
-		if NumPagina == paginasTotales {
-			final := int(numeroRegistros) % limitePorPagina
-			if final == 0 {
-				for _, v := range arrIDElastic[skip:limite] {
-					arrToMongo = append(arrToMongo, v)
-				}
-			} else {
-				for _, v := range arrIDElastic[skip : skip+final] {
-					arrToMongo = append(arrToMongo, v)
-				}
-			}
-
+		elementos, err := ExpresionesRegulares.GetRangeInPage(num, limitePorPagina)
+		if err != nil {
+			Send.SEstado = false
+			Send.SMsj = "Error al conseguir los datos de la página"
 		} else {
-			for _, v := range arrIDElastic[skip:limite] {
-				arrToMongo = append(arrToMongo, v)
-			}
+			Cabecera, Cuerpo := ExpresionesRegulares.GeneraTemplatesBusqueda(elementos)
+			Send.SIndex.SCabecera = template.HTML(Cabecera)
+			Send.SIndex.SBody = template.HTML(Cuerpo)
 		}
 
-		Cabecera, Cuerpo := ExpresionesRegulares.GeneraTemplatesBusqueda(ExpresionesRegulares.GetEspecifics(arrToMongo))
-		Send.SIndex.SCabecera = template.HTML(Cabecera)
-		Send.SIndex.SBody = template.HTML(Cuerpo)
-
-		Paginacion := MoGeneral.ConstruirPaginacion(paginasTotales, NumPagina)
+		Paginacion := MoGeneral.ConstruirPaginacion(paginasTotales, num)
 		Send.SIndex.SPaginacion = template.HTML(Paginacion)
-
+		// Send.SIndex.SRMsj = string(num)
 	} else {
 		Send.SMsj = "No se recibió una cadena de consulta, favor de escribirla."
 

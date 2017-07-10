@@ -71,6 +71,47 @@ func GetAll() ([]ExpresionMgo, error) {
 
 }
 
+// GetRangeInPage Regresa el rango de eleentos entre paginas
+func GetRangeInPage(pagina int, elementosPorPagina int) ([]ExpresionMgo, error) {
+	var aux ExpresionMgo
+	var expresion []ExpresionMgo
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return expresion, err
+	}
+	saltar := (pagina - 1) * elementosPorPagina
+	Query := fmt.Sprintf(`SELECT * FROM public."%v" LIMIT %v OFFSET %v`, "REGEXTKUS", elementosPorPagina, saltar)
+	fmt.Println(Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println(err)
+		return expresion, err
+	}
+	resultSet, err := stmt.Query()
+	if err != nil {
+		fmt.Println(err)
+		return expresion, err
+	}
+
+	for resultSet.Next() {
+		err := resultSet.Scan(&aux.IDExpresion, &aux.Clase, &aux.Expresion)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		} else {
+			aux.ID = bson.ObjectIdHex(aux.IDExpresion)
+			expresion = append(expresion, aux)
+		}
+
+	}
+	resultSet.Close()
+	stmt.Close()
+	BasePosGres.Close()
+
+	return expresion, nil
+
+}
+
 //CountAll Regresa todos los documentos existentes de Mongo (Por Coleccion)
 func CountAll() (int, error) {
 
@@ -101,7 +142,7 @@ func CountAll() (int, error) {
 	return total, nil
 }
 
-//GetOne Regresa un documento específico de Mongo (Por Coleccion)
+//GetOne Regresa un documento específico de SQL (Por Coleccion)
 func GetOne(ID string) (ExpresionMgo, error) {
 	var result ExpresionMgo
 	BasePosGres, err := MoConexion.ConexionPsql()
@@ -110,7 +151,7 @@ func GetOne(ID string) (ExpresionMgo, error) {
 		return result, err
 	}
 
-	Query := fmt.Sprintf(`SELECT * FROM public."%v" WHERE "ID"='%v'`, "REGEXTKUS", ID)
+	Query := fmt.Sprintf(`SELECT *, count(*) FROM public."%v" WHERE "ID"='%v' GROUP BY "ID"`, "REGEXTKUS", ID)
 	fmt.Println("Query One : ", Query)
 	stmt, err := BasePosGres.Prepare(Query)
 	if err != nil {
@@ -118,16 +159,153 @@ func GetOne(ID string) (ExpresionMgo, error) {
 		return result, err
 	}
 	resultSet := stmt.QueryRow()
-
-	err = resultSet.Scan(&result.IDExpresion, &result.Clase, &result.Expresion)
+	i := 0
+	err = resultSet.Scan(&result.IDExpresion, &result.Clase, &result.Expresion, &i)
 	if err != nil {
 		fmt.Println("Error recuperando numero de registros: ", err)
 		return result, err
 	}
+
 	result.ID = bson.ObjectIdHex(result.IDExpresion)
 	stmt.Close()
 	BasePosGres.Close()
 	fmt.Println("Finaliza GetOne")
+	return result, nil
+}
+
+//ExistOne Regresa un documento específico de SQL (Por Coleccion)
+func ExistOne(ID string) (bool, error) {
+	var result bool
+	result = false
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return result, err
+	}
+
+	Query := fmt.Sprintf(`SELECT COUNT(*) FROM public."%v" WHERE "ID"='%v'`, "REGEXTKUS", ID)
+	fmt.Println("Query One : ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
+	}
+
+	resultSet := stmt.QueryRow()
+	i := 0
+	err = resultSet.Scan(&i)
+	if i > 0 {
+		result = true
+	}
+	if err != nil {
+		fmt.Println("Error recuperando numero de registros: ", err)
+		return result, err
+	}
+
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza GetOne")
+	return result, nil
+}
+
+//InsertOne Inserta un documento específico de SQL (Por Coleccion)
+func (me *ExpresionMgo) InsertOne() (string, error) {
+	var result string
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return result, err
+	}
+
+	Query := fmt.Sprintf(`INSERT INTO public."%v"(
+            "ID", "Categoria", "ExprReg")
+    VALUES ('%v', '%v', '%v') RETURNING "ID"`,
+		"REGEXTKUS", me.IDExpresion, me.Clase, me.Expresion)
+
+	fmt.Println("Query Update One : ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
+	}
+	resultSet := stmt.QueryRow()
+
+	err = resultSet.Scan(&result)
+	if err != nil {
+		fmt.Println("Error recuperando ultimo actualizado: ", err)
+		return result, err
+	}
+
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza InsertOne", me)
+	return result, nil
+}
+
+//ModifyOne Modifica un documento específico de SQL (Por Coleccion)
+func (me *ExpresionMgo) ModifyOne() (string, error) {
+	var result string
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return result, err
+	}
+
+	Query := fmt.Sprintf(`UPDATE public."%v"
+							SET  "Categoria"='%v', "ExprReg"='%v'
+							WHERE "ID"='%v' RETURNING "ID"`,
+		"REGEXTKUS", me.Clase, me.Expresion, me.IDExpresion)
+
+	fmt.Println("Query Update One : ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
+	}
+	resultSet := stmt.QueryRow()
+
+	err = resultSet.Scan(&result)
+	if err != nil {
+		fmt.Println("Error recuperando ultimo actualizado: ", err)
+		return result, err
+	}
+
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza ModifyOne", me)
+	return result, nil
+}
+
+//DeleteOne Elimina un documento específico de SQL (Por Coleccion)
+func (me *ExpresionMgo) DeleteOne() (string, error) {
+	var result string
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return result, err
+	}
+
+	Query := fmt.Sprintf(`DELETE FROM  public."%v"
+							WHERE "ID"='%v' RETURNING "ID"`,
+		"REGEXTKUS", me.IDExpresion)
+
+	fmt.Println("Query DeleteOne : ", Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println("Error preparando sentencia", err)
+		return result, err
+	}
+	resultSet := stmt.QueryRow()
+
+	err = resultSet.Scan(&result)
+	if err != nil {
+		fmt.Println("Error recuperando ultimo eliminado: ", err)
+		return result, err
+	}
+
+	stmt.Close()
+	BasePosGres.Close()
+	fmt.Println("Finaliza DeleteOne", me)
 	return result, nil
 }
 

@@ -48,7 +48,7 @@
 				</div>
 				{{end}} {{end}}
 
-				<h1>Detalle de Expresions</h1>
+				<h3>Detalle de Expresiones</h3>
 				<form id="Form_Detalle_Expresion" class="form-horizontal" method="POST">
 					<div class="form-group">
 						<label class="col-sm-4 control-label" for="IDExpresion">IDExpresion:</label> {{if .Expresion.EIDExpresionExpresion.IEstatus}}
@@ -99,9 +99,10 @@
 					<div class="form-group">
 
 						<div class="col-md-9 text-right">
-							<button type="button" onclick="window.location.href = '/Expresions';" class="btn btn-default btn-lg">Index</button>
-							<button type="button" onclick="EditaExpresion('Detalle')" class="btn btn-primary btn-lg">Edita</button>
-							<button type="button" onclick="window.location.href = '/Expresions/alta';" class="btn btn-success btn-lg">Nuevo</button>
+							<button type="button" data-toggle="tooltip" title="Index" onclick="window.location.href = '/Expresions';" class="btn btn-secondary btn-lg"><span class="glyphicon glyphicon-list"></span></button>
+							<button type="button" data-toggle="tooltip" title="Elimina" onclick="EliminaExpresion();" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button>
+							<button type="button" data-toggle="tooltip" title="Edita"  onclick="EditaExpresion('Detalle')" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-edit"></span> </button>
+							<button type="button" data-toggle="tooltip" title="Crea"  onclick="window.location.href = '/Expresions/alta';" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-pencil"></button>
 						</div>
 					</div>
 				</form>

@@ -35,7 +35,7 @@
 		{{template "menu_ticket"}}
 		<div class="container-fluid">
 			<div class="side-body">
-				{{.SEstado}} {{if .SEstado}} {{if .SMsj}}
+				{{if .SEstado}} {{if .SMsj}}
 				<div class="alert alert-success alert-dismissible" role="alert">
 					<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<strong><h3>{{.SMsj}}</h3></strong>
@@ -49,6 +49,19 @@
 
 				<div class="row well">
 					<h3>Listado de Expresiones Regulares</h3>
+					<div class="clearfix">&nbsp;</div>
+
+					<div class="form-group">
+						<div class="col-md-11 text-right">
+							<button type="button" onclick="window.location.href = '/Expresions/alta';" class="btn-lg btn-primary"><span class="glyphicon glyphicon-pencil"></span> Nuevo</button>
+						</div>
+					</div>
+					<div class="clearfix">&nbsp;</div>
+
+					<div class="clearfix">&nbsp;</div>
+					<div id="Paginacion" class="PPaginacion">
+						{{.SIndex.SPaginacion}}
+					</div>
 					<table class="table table-hover table-striped table-responsive">
 						<thead id="Cabecera" class="bg-primary">
 							{{.SIndex.SCabecera}}
@@ -56,16 +69,14 @@
 						<tbody id="Cuerpo">
 							{{.SIndex.SBody}}
 						</tbody>
+
 					</table>
+
 				</div>
 
 
 
-				<div class="form-group">
-					<div class="col-md-11 text-right">
-						<button type="button" onclick="window.location.href = '/Expresions/alta';" class="btn-lg btn-primary">Nuevo Expresion</button>
-					</div>
-				</div>
+
 			</div>
 		</div>
 	</section>
@@ -75,4 +86,3 @@
 </body>
 
 </html>
-

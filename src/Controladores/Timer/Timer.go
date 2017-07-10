@@ -302,7 +302,7 @@ func IndexPost(ctx *iris.Context) {
 		default:
 			fmt.Println("No hay nada que hacer")
 			vista.Estado = false
-			vista.Error = "No es una categoria de Ticket reconocida"
+			vista.Error = "No es una categoria válida."
 			vista.Mensaje = ""
 			vista.CodigoBarraTicket.CodigoBarraTicket = ""
 			vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
@@ -324,6 +324,9 @@ func CapturaRespuestaGet(ctx *iris.Context) {
 	fmt.Println("=================================")
 	var vista reporte.ReporteVista
 	V := sessionUtils.LeerGalletaReporte(ctx, "vista")
+	// v := sessionUtils.LeerGalletaGeneral(ctx, "vista")
+
+	// fmt.Println(v, reflect.TypeOf(v))
 
 	if V != nil {
 		fmt.Println()
@@ -354,7 +357,7 @@ func CapturaRespuestaPost(ctx *iris.Context) {
 	fmt.Println("Timer.CapturaRespuestaPost")
 	var vista reporte.ReporteVista
 	V := sessionUtils.LeerGalletaReporte(ctx, "vista")
-	fmt.Println("vista: ", V)
+	// fmt.Println("vista: ", V)
 
 	if V != nil {
 		vista.CodigoBarraTicket.CodigoBarraTicket = V.CodigoBarraTicket

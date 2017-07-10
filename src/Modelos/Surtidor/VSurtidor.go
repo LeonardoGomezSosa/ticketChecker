@@ -53,7 +53,7 @@ type SIndex struct {
 type SSurtidor struct {
 	SEstado bool
 	SMsj    string
-	Surtidor
+	SurtidorSS
 	SIndex
 	SSesion
 }
