@@ -55,8 +55,8 @@
 					<div class="form-group">
 						<label class="col-sm-4 control-label" for="ID">ID:</label> {{if .SurtidorSS.ECodigoBarraSurtidor.IEstatus}}
 						<div class="col-sm-5 has-feedback has-error">
-							<input readonly type="text" name="ID" id="ID" class="form-control" value="{{.SurtidorSS.ID.Hex}}"
-							 aria-required="true" aria-describedby="CodigoBarra-error" aria-invalid="true">
+							<input readonly type="text" name="ID" id="ID" class="form-control" value="{{.SurtidorSS.ID.Hex}}" aria-required="true" aria-describedby="CodigoBarra-error"
+							 aria-invalid="true">
 							<span class="glyphicon form-control-feedback glyphicon-remove"></span>
 							<em id="CodigoBarra-error" class="error help-block">{{.SurtidorSS.ECodigoBarraSurtidor.IMsj}}</em>
 						</div>
@@ -84,8 +84,8 @@
 					<div class="form-group">
 						<label class="col-sm-4 control-label" for="Usuario">Usuario:</label> {{if .SurtidorSS.EUsuarioSurtidor.IEstatus}}
 						<div class="col-sm-5 has-feedback has-error">
-							<input readonly type="text" name="Usuario" id="Usuario" class="form-control" value="{{.SurtidorSS.EUsuarioSurtidor.Usuario}}" aria-required="true"
-							 aria-describedby="Usuario-error" aria-invalid="true">
+							<input readonly type="text" name="Usuario" id="Usuario" class="form-control" value="{{.SurtidorSS.EUsuarioSurtidor.Usuario}}"
+							 aria-required="true" aria-describedby="Usuario-error" aria-invalid="true">
 							<span class="glyphicon form-control-feedback glyphicon-remove"></span>
 							<em id="Usuario-error" class="error help-block">{{.SurtidorSS.EUsuarioSurtidor.IMsj}}</em>
 						</div>
@@ -100,9 +100,10 @@
 
 					<div class="form-group">
 						<div class="col-md-9 text-right">
-							<button type="button" onclick="window.location.href = '/Surtidors';" class="btn btn-default btn-lg">Index</button>
-							<button type="button" onclick="EditaSurtidor('Detalle')" class="btn btn-primary btn-lg">Edita</button>
-							<button type="button" onclick="window.location.href = '/Surtidors/alta';" class="btn btn-success btn-lg">Nuevo</button>
+							<button data-toggle="tooltip" title="Index" type="button" onclick="window.location.href = '/Surtidors';" class="btn btn-secondary btn-lg"><span class="glyphicon glyphicon-list"></span></button>
+							<button type="button" data-toggle="tooltip" title="Elimina" onclick="EliminaSurtidor();" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button>
+							<button type="button" data-toggle="tooltip" title="Edita" onclick="EditaSurtidor('Detalle');" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-edit"></span> </button>
+							<button type="button" data-toggle="tooltip" title="Crea" onclick="window.location.href = '/Surtidors/alta';" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-pencil"></button>
 						</div>
 					</div>
 				</form>

@@ -53,7 +53,7 @@ func GetAll() ([]SurtidorMgo, error) {
 	}
 	var aux SurtidorMgo
 	for resultSet.Next() {
-		err := resultSet.Scan(&aux.IDSurtidor, &aux.Usuario, &aux.CodigoBarra)
+		err := resultSet.Scan(&aux.IDSurtidor, &aux.CodigoBarra, &aux.Usuario)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		} else {
@@ -112,7 +112,7 @@ func GetOne(ID string) (SurtidorMgo, error) {
 	}
 
 	Query := fmt.Sprintf(`SELECT * FROM public."%v" WHERE "ID"='%v' GROUP BY "ID"`, "SURTIDORES", ID)
-	fmt.Println("Query One : ", Query)
+	fmt.Println("Query GetOne : ", Query)
 	stmt, err := BasePosGres.Prepare(Query)
 	if err != nil {
 		fmt.Println("Error preparando sentencia", err)
@@ -246,7 +246,7 @@ func (me *SurtidorMgo) DeleteOne() (string, error) {
 
 	Query := fmt.Sprintf(`DELETE FROM  public."%v"
 							WHERE "ID"='%v' RETURNING "ID"`,
-		"Surtidores", me.IDSurtidor)
+		"SURTIDORES", me.IDSurtidor)
 
 	fmt.Println("Query DeleteOne : ", Query)
 	stmt, err := BasePosGres.Prepare(Query)
@@ -266,6 +266,47 @@ func (me *SurtidorMgo) DeleteOne() (string, error) {
 	BasePosGres.Close()
 	fmt.Println("Finaliza DeleteOne", me)
 	return result, nil
+}
+
+// GetRangeInPage Regresa el rango de eleentos entre paginas
+func GetRangeInPage(pagina int, elementosPorPagina int) ([]SurtidorMgo, error) {
+	var aux SurtidorMgo
+	var expresion []SurtidorMgo
+	BasePosGres, err := MoConexion.ConexionPsql()
+	if err != nil {
+		fmt.Println(err)
+		return expresion, err
+	}
+	saltar := (pagina - 1) * elementosPorPagina
+	Query := fmt.Sprintf(`SELECT * FROM public."%v" LIMIT %v OFFSET %v`, "SURTIDORES", elementosPorPagina, saltar)
+	fmt.Println(Query)
+	stmt, err := BasePosGres.Prepare(Query)
+	if err != nil {
+		fmt.Println(err)
+		return expresion, err
+	}
+	resultSet, err := stmt.Query()
+	if err != nil {
+		fmt.Println(err)
+		return expresion, err
+	}
+
+	for resultSet.Next() {
+		err := resultSet.Scan(&aux.IDSurtidor, &aux.CodigoBarra, &aux.Usuario)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		} else {
+			aux.ID = bson.ObjectIdHex(aux.IDSurtidor)
+			expresion = append(expresion, aux)
+		}
+
+	}
+	resultSet.Close()
+	stmt.Close()
+	BasePosGres.Close()
+
+	return expresion, nil
+
 }
 
 //GetEspecifics rsegresa un conjunto de documentos específicos de Mongo (Por Coleccion)

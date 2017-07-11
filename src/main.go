@@ -79,6 +79,11 @@ func main() {
 	app.Post("/Surtidors/edita", SurtidorControler.EditaPost)
 	app.Get("/Surtidors/edita/:ID", SurtidorControler.EditaGet)
 	app.Post("/Surtidors/edita/:ID", SurtidorControler.EditaPost)
+	//Elimina
+	app.Get("/Surtidors/Elimina/", SurtidorControler.EliminaGet)
+	app.Post("/Surtidors/Elimina/", SurtidorControler.EliminaPost)
+	app.Get("/Surtidors/Elimina/:ID", SurtidorControler.EliminaGet)
+	app.Post("/Surtidors/Elimina/:ID", SurtidorControler.EliminaPost)
 
 	app.Post("/Surtidors/search", SurtidorControler.BuscaPagina)
 	app.Post("/Surtidors/agrupa", SurtidorControler.MuestraIndexPorGrupo)

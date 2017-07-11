@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"net/http"
 	"strconv"
 
 	"../../Modulos/Session"
 
+	"../../Modelos/ExpresionesRegulares"
 	"../../Modelos/Surtidor"
 	"../../Modulos/Conexiones"
 	"../../Modulos/General"
@@ -26,7 +26,7 @@ var paginasTotales int
 var NumPagina int
 
 //limitePorPagina limite de registros a mostrar en la pagina
-var limitePorPagina = 10
+var limitePorPagina = 5
 
 //IDElastic id obtenido de Elastic
 var IDElastic bson.ObjectId
@@ -215,15 +215,25 @@ func AltaPost(ctx *iris.Context) {
 				e.Usuario = Usuario
 				e.CodigoBarra = CodigoBarra
 				e.ID = bson.ObjectIdHex(ID)
-				fmt.Println("Objeto a insertar: ", e)
-				rs, err := e.InsertOne()
-				if err != nil {
-					Send.SMsj = fmt.Sprintf("Ocurrio un problema al insertar objeto. Intente mas tarde")
-					Send.SEstado = false
+
+				Categoria := ExpresionesRegulares.ObtenerCategoriaTexto(e.CodigoBarra)
+
+				if Categoria == "Surtidor" {
+					fmt.Println("Objeto a insertar: ", e)
+
+					rs, err := e.InsertOne()
+					if err != nil {
+						Send.SMsj = fmt.Sprintf("Ocurrio un problema al insertar objeto. Intente mas tarde")
+						Send.SEstado = false
+					} else {
+						Send.SMsj = fmt.Sprintf("Objeto insertado Correctamente: %v.", rs)
+						Send.SEstado = true
+					}
 				} else {
-					Send.SMsj = fmt.Sprintf("Objeto insertado Correctamente: %v.", rs)
-					Send.SEstado = true
+					Send.SMsj = fmt.Sprintf("%v no es una categoria válida.", e.CodigoBarra)
+					Send.SEstado = false
 				}
+
 				Send.SurtidorSS.ID = e.ID
 				Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
 				Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
@@ -232,7 +242,7 @@ func AltaPost(ctx *iris.Context) {
 	}
 	fmt.Println(Send)
 
-	ctx.Render("Surtidor/SurtidorAlta.html", Send)
+	ctx.Render("Surtidor/SurtidorDetalle.html", Send)
 }
 
 //###########################< EDICION >###############################
@@ -296,11 +306,7 @@ func EditaPost(ctx *iris.Context) {
 		fmt.Println("error al comprobar existencia")
 	} else {
 		if IDExist {
-			Send.SMsj = fmt.Sprintf("El ID existe en la base de datos.")
-			Send.SEstado = false
-			Send.SurtidorSS.ID = bson.NewObjectId()
-			fmt.Println("Elemento ya existe en la base de datos")
-		} else {
+
 			if MoGeneral.CadenaVacia(ID) || MoGeneral.CadenaVacia(Usuario) || MoGeneral.CadenaVacia(CodigoBarra) {
 				Send.SMsj = fmt.Sprintf("Algun dato esta vacio.")
 				Send.SEstado = false
@@ -315,23 +321,104 @@ func EditaPost(ctx *iris.Context) {
 				e.CodigoBarra = CodigoBarra
 				e.ID = bson.ObjectIdHex(ID)
 				fmt.Println("Objeto a insertar: ", e)
-				rs, err := e.InsertOne()
+				rs, err := e.ModifyOne()
 				if err != nil {
 					Send.SMsj = fmt.Sprintf("Ocurrio un problema al insertar objeto. Intente mas tarde")
 					Send.SEstado = false
 				} else {
-					Send.SMsj = fmt.Sprintf("Objeto insertado Correctamente: %v.", rs)
+					Send.SMsj = fmt.Sprintf("Objeto Modificado Correctamente: %v.", rs)
 					Send.SEstado = true
 				}
 				Send.SurtidorSS.ID = e.ID
 				Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
 				Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
 			}
+		} else {
+			Send.SMsj = fmt.Sprintf("El ID no existe en la base de datos.")
+			Send.SEstado = false
+			Send.SurtidorSS.ID = bson.NewObjectId()
+			fmt.Println("Elemento ya existe en la base de datos")
 		}
 	}
 	fmt.Println(Send)
 
-	ctx.Render("Surtidor/SurtidorEdita.html", Send)
+	ctx.Render("Surtidor/SurtidorDetalle.html", Send)
+
+}
+
+//EliminaGet renderea a la edición de Expresion
+func EliminaGet(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.EliminaGet: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	var Send Surtidor.SSurtidor
+	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		e, err := Surtidor.GetOne(id)
+		if err != nil {
+			Send.SurtidorSS.ID = bson.NewObjectId()
+			Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = ""
+			Send.SurtidorSS.EUsuarioSurtidor.Usuario = ""
+			Send.SMsj = "No se encontró la expresion..."
+			Send.SEstado = false
+		} else {
+			Send.SurtidorSS.ID = e.ID
+			Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
+			Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
+			rs, err := e.DeleteOne()
+			if err != nil {
+				Send.SMsj = fmt.Sprintf("Error al eliminar el elemento %v: %v.", id, e.Usuario)
+				Send.SEstado = false
+			} else {
+				Send.SMsj = fmt.Sprintf("Usuario: %v con  ID: %v ha sido eliminado.", e.Usuario, rs)
+				Send.SEstado = true
+			}
+		}
+	} else {
+		ctx.Redirect("/Expresions", 301)
+	}
+	ctx.Render("Surtidor/SurtidorDetalle.html", Send)
+
+}
+
+//EliminaPost renderea a la edición de Expresion
+func EliminaPost(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.EliminaPost: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	var Send Surtidor.SSurtidor
+	//###### TU CÓDIGO AQUÍ PROGRAMADOR
+	id := ctx.Param("ID")
+	if id != "" {
+		e, err := Surtidor.GetOne(id)
+		if err != nil {
+			Send.SurtidorSS.ID = bson.NewObjectId()
+			Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = ""
+			Send.SurtidorSS.EUsuarioSurtidor.Usuario = ""
+			Send.SMsj = "No se encontró la expresion..."
+			Send.SEstado = false
+		} else {
+			Send.SurtidorSS.ID = e.ID
+			Send.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra = e.CodigoBarra
+			Send.SurtidorSS.EUsuarioSurtidor.Usuario = e.Usuario
+			rs, err := e.DeleteOne()
+			if err != nil {
+				Send.SMsj = fmt.Sprintf("Error al eliminar el elemento %v: %v.", id, e.Usuario)
+				Send.SEstado = false
+			} else {
+				Send.SMsj = fmt.Sprintf("Usuario: %v con  ID: %v ha sido eliminado.", e.Usuario, rs)
+				Send.SEstado = true
+			}
+		}
+	} else {
+		ctx.Redirect("/Expresions", 301)
+	}
+	ctx.Render("Surtidor/SurtidorDetalle.html", Send)
 
 }
 
@@ -381,61 +468,48 @@ func DetallePost(ctx *iris.Context) {
 	Send.SSesion.Nivel = nivel
 	Send.SSesion.IDS = id
 
-	if name == "" {
-		http.Redirect(ctx.ResponseWriter, ctx.Request, "/Login", 302)
-	}
-
-	if nivel == "Administrador" {
-		Send.SSesion.IsAdmin = true
-	}
-
 	//###### TU CÓDIGO AQUÍ PROGRAMADOR
 
-	ctx.Render("SurtidorDetalle.html", Send)
+	ctx.Render("Surtidor/SurtidorDetalle.html", Send)
 }
 
 //####################< RUTINAS ADICIONALES >##########################
 
 //BuscaPagina regresa la tabla de busqueda y su paginacion en el momento de especificar página
 func BuscaPagina(ctx *iris.Context) {
-	var Send Surtidor.SSurtidor
-
-	Pagina := ctx.FormValue("Pag")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Expresionesregulares.ExpresionControler.go.BuscaPagina: Pos")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	var Send ExpresionesRegulares.SExpresion
+	Pagina := MoGeneral.LimpiarCadena(ctx.FormValue("Pag"))
 	if Pagina != "" {
 		num, _ := strconv.Atoi(Pagina)
+		fmt.Println("Pagina: ", num)
+		if num > paginasTotales {
+			num = paginasTotales
+		}
 		if num == 0 {
 			num = 1
 		}
+
+		fmt.Println("Pagina: ", num)
+
 		NumPagina = num
-		skip := limitePorPagina * (NumPagina - 1)
-		limite := skip + limitePorPagina
-
-		arrToMongo = []bson.ObjectId{}
-		if NumPagina == paginasTotales {
-			final := int(numeroRegistros) % limitePorPagina
-			if final == 0 {
-				for _, v := range arrIDElastic[skip:limite] {
-					arrToMongo = append(arrToMongo, v)
-				}
-			} else {
-				for _, v := range arrIDElastic[skip : skip+final] {
-					arrToMongo = append(arrToMongo, v)
-				}
-			}
-
+		elementos, err := Surtidor.GetRangeInPage(num, limitePorPagina)
+		if err != nil {
+			Send.SEstado = false
+			Send.SMsj = "Error al conseguir los datos de la página"
 		} else {
-			for _, v := range arrIDElastic[skip:limite] {
-				arrToMongo = append(arrToMongo, v)
-			}
+			Cabecera, Cuerpo := Surtidor.GeneraTemplatesBusqueda(elementos)
+			Send.SIndex.SCabecera = template.HTML(Cabecera)
+			Send.SIndex.SBody = template.HTML(Cuerpo)
 		}
 
-		Cabecera, Cuerpo := Surtidor.GeneraTemplatesBusqueda(Surtidor.GetEspecifics(arrToMongo))
-		Send.SIndex.SCabecera = template.HTML(Cabecera)
-		Send.SIndex.SBody = template.HTML(Cuerpo)
-
-		Paginacion := MoGeneral.ConstruirPaginacion(paginasTotales, NumPagina)
+		Paginacion := MoGeneral.ConstruirPaginacion(paginasTotales, num)
 		Send.SIndex.SPaginacion = template.HTML(Paginacion)
-
+		// Send.SIndex.SRMsj = string(num)
 	} else {
 		Send.SMsj = "No se recibió una cadena de consulta, favor de escribirla."
 

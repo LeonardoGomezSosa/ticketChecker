@@ -170,6 +170,9 @@ func AltaGet(ctx *iris.Context) {
 	fmt.Println("Expresionesregulares.ExpresionControler.go.AltaGet: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send ExpresionesRegulares.SExpresion
 	// if !sessionUtils.IsStarted(ctx) {
 	// 	ctx.Redirect("/Login", 301)
@@ -187,6 +190,9 @@ func AltaGet(ctx *iris.Context) {
 
 //AltaPost regresa la petición post que se hizo desde el alta de Expresion
 func AltaPost(ctx *iris.Context) {
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	fmt.Println("=================================")
 	fmt.Println("=================================")
 	fmt.Println("Expresionesregulares.ExpresionControler.go.AltaGet: GET")
@@ -233,7 +239,7 @@ func AltaPost(ctx *iris.Context) {
 		}
 	}
 
-	ctx.Render("Expresion/ExpresionAlta.html", Send)
+	ctx.Render("Expresion/ExpresionDetalle.html", Send)
 
 }
 
@@ -246,6 +252,9 @@ func EditaGet(ctx *iris.Context) {
 	fmt.Println("Expresionesregulares.ExpresionControler.go.EditaGet: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send ExpresionesRegulares.SExpresion
 	//###### TU CÓDIGO AQUÍ PROGRAMADOR
 	id := ctx.Param("ID")
@@ -279,6 +288,9 @@ func EditaPost(ctx *iris.Context) {
 	fmt.Println("Expresionesregulares.ExpresionControler.go.EditaPost: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send ExpresionesRegulares.SExpresion
 	//###### TU CÓDIGO AQUÍ PROGRAMADOR
 	id := ctx.Param("ID")
@@ -401,6 +413,9 @@ func EliminaGet(ctx *iris.Context) {
 	fmt.Println("Expresionesregulares.ExpresionControler.go.EliminaGet: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send ExpresionesRegulares.SExpresion
 	//###### TU CÓDIGO AQUÍ PROGRAMADOR
 	id := ctx.Param("ID")
@@ -440,6 +455,9 @@ func EliminaPost(ctx *iris.Context) {
 	fmt.Println("Expresionesregulares.ExpresionControler.go.EliminaPost: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send ExpresionesRegulares.SExpresion
 	//###### TU CÓDIGO AQUÍ PROGRAMADOR
 	id := ctx.Param("ID")
@@ -481,6 +499,9 @@ func BuscaPagina(ctx *iris.Context) {
 	fmt.Println("Expresionesregulares.ExpresionControler.go.BuscaPagina: Pos")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send ExpresionesRegulares.SExpresion
 	Pagina := MoGeneral.LimpiarCadena(ctx.FormValue("Pag"))
 	if Pagina != "" {
@@ -525,6 +546,9 @@ func BuscaPagina(ctx *iris.Context) {
 
 //MuestraIndexPorGrupo regresa template de busqueda y paginacion de acuerdo a la agrupacion solicitada
 func MuestraIndexPorGrupo(ctx *iris.Context) {
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send ExpresionesRegulares.SExpresion
 	var Cabecera, Cuerpo string
 

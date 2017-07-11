@@ -9,59 +9,66 @@ $(document).ready(function () {
 	console.log("surtidor.js");
 	console.log("-----------------");
 	$(".waitgif").hide();
-	var validator = valida();
+	// var validator = valida();
 });
 
-function valida() {
-	var validator = $("#Form_Alta_Surtidor").validate({
-		rules: {
+// function valida() {
+// 	var validator = $("#Form_Alta_Surtidor").validate({
+// 		rules: {
 
-		},
-		messages: {
+// 		},
+// 		messages: {
 
-		},
-		errorElement: "em",
-		errorPlacement: function (error, element) {
-			error.addClass("help-block");
-			element.parents(".col-sm-5").addClass("has-feedback");
+// 		},
+// 		errorElement: "em",
+// 		errorPlacement: function (error, element) {
+// 			error.addClass("help-block");
+// 			element.parents(".col-sm-5").addClass("has-feedback");
 
-			if (element.prop("type") === "checkbox") {
-				error.insertAfter(element.parent("label"));
-			} else {
-				error.insertAfter(element);
-			}
+// 			if (element.prop("type") === "checkbox") {
+// 				error.insertAfter(element.parent("label"));
+// 			} else {
+// 				error.insertAfter(element);
+// 			}
 
-			if (!element.next("span")[0]) {
-				$("<span class='glyphicon glyphicon-remove form-control-feedback'></span>").insertAfter(element);
-			}
-		},
-		success: function (label, element) {
-			if (!$(element).next("span")[0]) {
-				$("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
-			}
-		},
-		highlight: function (element, errorClass, validClass) {
-			$(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
-			$(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
-		},
-		unhighlight: function (element, errorClass, validClass) {
-			$(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
-			$(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
-		}
-	});
-	return validator;
-}
+// 			if (!element.next("span")[0]) {
+// 				$("<span class='glyphicon glyphicon-remove form-control-feedback'></span>").insertAfter(element);
+// 			}
+// 		},
+// 		success: function (label, element) {
+// 			if (!$(element).next("span")[0]) {
+// 				$("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
+// 			}
+// 		},
+// 		highlight: function (element, errorClass, validClass) {
+// 			$(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
+// 			$(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
+// 		},
+// 		unhighlight: function (element, errorClass, validClass) {
+// 			$(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
+// 			$(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+// 		}
+// 	});
+// 	return validator;
+// }
 
 function EditaSurtidor(vista) {
-	if (vista == "Index" || vista == "") {
+	if (vista == "Index" || vista === "") {
 		if ($('#Surtidors').val() != "") {
 			window.location = '/Surtidors/edita/' + $('#Surtidors').val();
 		} else {
 			alertify.error("Debe Seleccionar un Surtidor para editar");
 		}
 	} else if (vista == "Detalle") {
-		if ($('#ID').val() != "") {
-			window.location = '/Surtidors/edita/' + $('#ID').val();
+		if ($('#ID').val() !== "") {
+			alertify.confirm('Confirmar Edicion de surtidor', '¿Desea modificar el elemento ' + $('#ID').val() +
+				' de usuario ' + $('#Usuario').val() + '?',
+				function () {
+					window.location = '/Surtidors/edita/' + $('#ID').val();
+				},
+				function () {
+					alertify.error('Accion Cancelada.');
+				});
 		} else {
 			alertify.error("No se puede editar debido a un error de referencias, favor de intentar en el index");
 			window.location = '/Surtidors';
@@ -72,13 +79,28 @@ function EditaSurtidor(vista) {
 
 
 function DetalleSurtidor() {
-	if ($('#Surtidors').val() != "") {
-		window.location = '/Surtidors/detalle/' + $('#Surtidors').val();
+	if ($('#ID').val() !== "") {
+		window.location = '/Surtidors/detalle/' + $('#ID').val();
+
 	} else {
-		alertify.error("Debe Seleccionar un Surtidor para editar");
+		alertify.error("Debe Seleccionar un Surtidor para Detalle");
 	}
 }
 
+function EliminaSurtidor() {
+	if ($('#ID').val() !== "") {
+		alertify.confirm('Confirmar Eliminacion de surtidor.', '¿Eliminar elemento ' + $('#ID').val() +
+			' de usuario ' + $('#Usuario').val() + '?',
+			function () {
+				window.location = '/Surtidors/Elimina/' + $('#ID').val();
+			},
+			function () {
+				alertify.error('Accion Cancelada.');
+			});
+	} else {
+		alertify.error("Debe Seleccionar un Surtidor para Eliminar");
+	}
+}
 
 
 function BuscaPagina(num) {

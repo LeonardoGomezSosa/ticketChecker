@@ -62,7 +62,15 @@ function EditaExpresion(vista) {
 	} else if (vista == "Detalle") {
 		console.log("editaExpresions: " + $('#IDExpresion').val());
 		if ($('#IDExpresion').val() !== "") {
-			window.location = '/Expresions/edita/' + $('#IDExpresion').val();
+						alertify.confirm('Confirmar Edicion de Expresion regular', '¿Desea modificar el elemento ' + $('#IDExpresion').val() +
+				' de Expresion Regular ' + $('#Expresion').val() + '?',
+				function () {
+					window.location = '/Expresions/edita/' + $('#IDExpresion').val();
+				},
+				function () {
+					alertify.error('Accion Cancelada.');
+				});
+			// window.location = '/Expresions/edita/' + $('#IDExpresion').val();
 		} else {
 			alertify.error("No se puede editar debido a un error de referencias, favor de intentar en el index");
 			window.location = '/Expresions';
@@ -89,19 +97,18 @@ function EliminaExpresion() {
 	}
 }
 
-
 function BuscaPagina(num) {
 	$('#Loading').show();
-	Page = $().val();
+
 	$.ajax({
 		url: "/Expresions/search",
 		type: 'POST',
 		dataType: 'json',
 		data: {
-			Pag: $("#num").val(),
+			Pag: num,
 		},
 		success: function (data) {
-			if (data !== null) {
+			if (data != null) {
 				if (data.SEstado) {
 					$("#Cabecera").empty();
 					$("#Cabecera").append(data.SCabecera);
@@ -109,9 +116,6 @@ function BuscaPagina(num) {
 					$("#Cuerpo").append(data.SBody);
 					$("#Paginacion").empty();
 					$("#Paginacion").append(data.SPaginacion);
-					// $("#num").empty();
-					// $("#num").append(data.data.SIndex.SRMsj);
-					// $("#num").val(data.SIndex.SRMsj);
 				} else {
 					alertify.error(data.SMsj);
 				}
