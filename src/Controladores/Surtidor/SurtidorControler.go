@@ -12,6 +12,7 @@ import (
 	"../../Modelos/Surtidor"
 	"../../Modulos/Conexiones"
 	"../../Modulos/General"
+	"../Sesiones"
 	"gopkg.in/kataras/iris.v6"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -43,6 +44,9 @@ func IndexGet(ctx *iris.Context) {
 	fmt.Println("Surtidors.SurtidorsControler.go.IndexGet: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 
 	var Cabecera, Cuerpo string
@@ -78,6 +82,9 @@ func IndexPost(ctx *iris.Context) {
 	fmt.Println("Surtidors.SurtidorsControler.go.IndexPost: POST")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 
 	var Cabecera, Cuerpo string
@@ -164,6 +171,9 @@ func AltaGet(ctx *iris.Context) {
 	fmt.Println("Surtidors.SurtidorsControler.go.AltaGet: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 	Send.SEstado = true
 	Send.SMsj = "Listo para cargar"
@@ -181,6 +191,9 @@ func AltaPost(ctx *iris.Context) {
 	fmt.Println("Surtidors.SurtidorsControler.go.AltaPost: POST")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 
 	//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
@@ -254,6 +267,9 @@ func EditaGet(ctx *iris.Context) {
 	fmt.Println("Surtidors.SurtidorsControler.go.EditaGet: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 	//###### TU CÓDIGO AQUÍ PROGRAMADOR
 	id := ctx.Param("ID")
@@ -290,6 +306,9 @@ func EditaPost(ctx *iris.Context) {
 	fmt.Println("Surtidors.SurtidorsControler.go.AltaPost: POST")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 
 	//####   TÚ CÓDIGO PARA PROCESAR DATOS DE LA VISTA DE ALTA Y GUARDARLOS O REGRESARLOS----> PROGRAMADOR
@@ -353,6 +372,9 @@ func EliminaGet(ctx *iris.Context) {
 	fmt.Println("Expresionesregulares.ExpresionControler.go.EliminaGet: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 	//###### TU CÓDIGO AQUÍ PROGRAMADOR
 	id := ctx.Param("ID")
@@ -391,6 +413,9 @@ func EliminaPost(ctx *iris.Context) {
 	fmt.Println("Expresionesregulares.ExpresionControler.go.EliminaPost: GET")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 	//###### TU CÓDIGO AQUÍ PROGRAMADOR
 	id := ctx.Param("ID")
@@ -426,7 +451,9 @@ func EliminaPost(ctx *iris.Context) {
 
 //DetalleGet renderea al index.html
 func DetalleGet(ctx *iris.Context) {
-
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 
 	// if !sessionUtils.IsStarted(ctx) {
@@ -461,6 +488,9 @@ func DetalleGet(ctx *iris.Context) {
 
 //DetallePost renderea al index.html
 func DetallePost(ctx *iris.Context) {
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 
 	name, nivel, id := Session.GetUserName(ctx.Request)
@@ -482,6 +512,9 @@ func BuscaPagina(ctx *iris.Context) {
 	fmt.Println("Expresionesregulares.ExpresionControler.go.BuscaPagina: Pos")
 	fmt.Println("=================================")
 	fmt.Println("=================================")
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send ExpresionesRegulares.SExpresion
 	Pagina := MoGeneral.LimpiarCadena(ctx.FormValue("Pag"))
 	if Pagina != "" {
@@ -526,6 +559,9 @@ func BuscaPagina(ctx *iris.Context) {
 
 //MuestraIndexPorGrupo regresa template de busqueda y paginacion de acuerdo a la agrupacion solicitada
 func MuestraIndexPorGrupo(ctx *iris.Context) {
+	if !sessionUtils.IsStarted(ctx) {
+		ctx.Redirect("/Login", 301)
+	}
 	var Send Surtidor.SSurtidor
 	var Cabecera, Cuerpo string
 
