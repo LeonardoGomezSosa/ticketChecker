@@ -86,13 +86,11 @@ func main() {
 	app.Post("/Surtidors/Elimina/:ID", SurtidorControler.EliminaPost)
 
 	app.Post("/Surtidors/search", SurtidorControler.BuscaPagina)
-	app.Post("/Surtidors/agrupa", SurtidorControler.MuestraIndexPorGrupo)
+	// app.Post("/Surtidors/agrupa", SurtidorControler.MuestraIndexPorGrupo)
 
 	//Index (Búsqueda)
 	app.Get("/Expresions", ExpresionControler.IndexGet)
 	app.Post("/Expresions", ExpresionControler.IndexPost)
-	app.Post("/Expresions/search", ExpresionControler.BuscaPagina)
-	app.Post("/Expresions/agrupa", ExpresionControler.MuestraIndexPorGrupo)
 
 	//Alta
 	app.Get("/Expresions/alta", ExpresionControler.AltaGet)
@@ -116,6 +114,8 @@ func main() {
 	app.Get("/Expresions/Elimina/:ID", ExpresionControler.EliminaGet)
 	app.Post("/Expresions/Elimina/:ID", ExpresionControler.EliminaPost)
 
+	app.Post("/Expresions/search", ExpresionControler.BuscaPagina)
+	// app.Post("/Expresions/agrupa", ExpresionControler.MuestraIndexPorGrupo)
 	//###################### Listen Server #############################
 
 	if DataCfg.Puerto != "" {
