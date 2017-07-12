@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Bellefair|Cinzel|Dancing+Script|Didact+Gothic|Fresca|Gloria+Hallelujah|Handlee|Josefin+Sans|Kurale|Lemonada|Oxygen|Play|Poiret+One|Pontano+Sans|Poppins|Questrial|Rubik|Shrikhand|Varela+Round');
 body > section {
     padding: 75px 0px 0px 0px;
 }
@@ -33,7 +34,8 @@ width: 20px;
 }
 
 body{
-	background-color: #dedede;
+  background-color: #dedede;
+  font-family: 'Rubik', sans-serif;
 	/*background-image: url("/img/bubbles.png");*/
 	height: 100%;
     background-position: center;
