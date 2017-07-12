@@ -9,19 +9,13 @@ import (
 
 // ExpresionRegular Estructura que almacena un objeto expresion regular
 type ExpresionRegular struct {
-	ID               int64
+	ID               string
 	Categoria        string
 	ExpresionRegular string
 }
 
 // ObtenerExpresionesAlmacenadas oBTIENE EL CONJUNTO DE LAS EXPRESIONES REGULARES ALMACENADAS
 func ObtenerExpresionesAlmacenadas() ([]ExpresionRegular, error) {
-	db, err := MoConexion.ConexionPsql()
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return nil, err
-	}
-	defer db.Close()
 
 	BasePosGres, err := MoConexion.ConexionPsql()
 	if err != nil {
@@ -29,7 +23,7 @@ func ObtenerExpresionesAlmacenadas() ([]ExpresionRegular, error) {
 		return nil, err
 	}
 
-	Query := fmt.Sprintf(`SELECT * FROM public."%v"`, "REGEXTKUS")
+	Query := fmt.Sprintf(`SELECT "ID", "Categoria", "ExprReg" FROM public."%v"`, "REGEXTKUS")
 	stmt, err := BasePosGres.Prepare(Query)
 	if err != nil {
 		fmt.Println(err)

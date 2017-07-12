@@ -165,6 +165,9 @@ func ConstruirPaginacion(paginasTotales int, pag int) string {
 		rt = pag + 1
 	}
 
+	if pag > paginasTotales {
+		pag = paginasTotales
+	}
 	//inicio
 	var templateP string
 
@@ -181,7 +184,7 @@ func ConstruirPaginacion(paginasTotales int, pag int) string {
       </span>
  
 
-      <input class="form-control" onkeypress="checkSubmit(this))" id="inputPagB" onchange="BuscaPagina(this.value)" value="` + strconv.Itoa(pag) + `" type="number" name="paginasat" min="1" max="` + strconv.Itoa(paginasTotales) + `">
+      <input class="form-control" onkeypress="checkSubmit(this)" id="num" onchange="BuscaPagina(this.value)" value="` + strconv.Itoa(pag) + `" type="number" name="num" min="1" max="` + strconv.Itoa(paginasTotales) + `">
  
       <span class="input-group-btn">
         <button class="btn btn-default" type="button"> de ` + strconv.Itoa(paginasTotales) + `</button>
@@ -221,26 +224,26 @@ func ConstruirPaginacion2(paginasTotales int, pag int) string {
 
     <div class="input-group col-md-8">
       
-	  <span class="input-group-btn" onclick="BuscaPaginaSat(1)">
+	  <span class="input-group-btn" onclick="BuscaPagina(1)">
         <button class="btn btn-primary" type="button"><span aria-hidden="true">&laquo;</span></button>
       </span>
       
-	  <span class="input-group-btn" onclick="BuscaPaginaSat(` + strconv.Itoa(lt) + `)">
+	  <span class="input-group-btn" onclick="BuscaPagina(` + strconv.Itoa(lt) + `)">
         <button class="btn btn-secondary" type="button"><span aria-hidden="true">&lt;</span></button>
       </span>
  
 
-      <input class="form-control" onkeypress="checkSubmit(this))" id="inputPagB" onchange="BuscaPaginaSat(this.value)" value="` + strconv.Itoa(pag) + `" type="number" name="paginasat" min="1" max="` + strconv.Itoa(paginasTotales) + `">
+      <input class="form-control" onkeypress="checkSubmit(this)" id="num" onchange="BuscaPagina(this.value)" value="` + strconv.Itoa(pag) + `" type="number" name="paginasat" min="1" max="` + strconv.Itoa(paginasTotales) + `">
  
       <span class="input-group-btn">
         <button class="btn btn-default" type="button"> de ` + strconv.Itoa(paginasTotales) + `</button>
       </span>
 
     
-      <span class="input-group-btn"  onclick="BuscaPaginaSat(` + strconv.Itoa(rt) + `)">
+      <span class="input-group-btn"  onclick="BuscaPagina(` + strconv.Itoa(rt) + `)">
         <button class="btn btn-secondary" type="button"><span aria-hidden="true">&gt;</span></button>
       </span>
-      <span class="input-group-btn" onclick="BuscaPaginaSat(` + strconv.Itoa(paginasTotales) + `)">
+      <span class="input-group-btn" onclick="BuscaPagina(` + strconv.Itoa(paginasTotales) + `)">
         <button class="btn btn-primary" type="button"><span aria-hidden="true">&raquo;</span></button>
       </span>
     </div>

@@ -18,8 +18,18 @@ var exp []ExpresionesRegulares.ExpresionRegular
 
 //IndexGet renderea al indObtenerExpresionesAlmacenadasex de Almacen
 func IndexGet(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	fmt.Println("Timer.Timer.go: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var vista reporte.ReporteVista
+	Categoria := ExpresionesRegulares.ObtenerCategoriaTexto("surtidor1")
+	fmt.Println(Categoria)
+	Categoria = ExpresionesRegulares.ObtenerCategoriaTexto("surtidor10")
+	fmt.Println(Categoria)
+	Categoria = ExpresionesRegulares.ObtenerCategoriaTexto("TR-0001")
+	fmt.Println(Categoria)
 	vista.Estado = true
 	vista.Mensaje = "Listo para cargar datos"
 	vista.Error = ""
@@ -30,7 +40,11 @@ func IndexGet(ctx *iris.Context) {
 
 //IndexPost regresa la peticon post que se hizo desde el index de Almacen
 func IndexPost(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	fmt.Println("Timer.Timerepr.go: POST")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	var rep reporte.Reporte
 	var vista reporte.ReporteVista
 	vista.Estado = false
@@ -61,7 +75,7 @@ func IndexPost(ctx *iris.Context) {
 
 	} else {
 		Categoria := ExpresionesRegulares.ObtenerCategoriaTexto(Entrada)
-
+		fmt.Println("Categoria: ", Categoria)
 		switch Categoria {
 		case "ticket":
 			existeEnReporte, report, err := reporte.ConsultarTicketExisteYRegresarContenidoPorCampo(Entrada, "CodigoBarraTicket", "REPORTE")
@@ -288,7 +302,7 @@ func IndexPost(ctx *iris.Context) {
 		default:
 			fmt.Println("No hay nada que hacer")
 			vista.Estado = false
-			vista.Error = "No es una categoria de Ticket reconocida"
+			vista.Error = "No es una categoria válida."
 			vista.Mensaje = ""
 			vista.CodigoBarraTicket.CodigoBarraTicket = ""
 			vista.CodigoBarraSurtidor.CodigoBarraSurtidor = ""
@@ -310,6 +324,9 @@ func CapturaRespuestaGet(ctx *iris.Context) {
 	fmt.Println("=================================")
 	var vista reporte.ReporteVista
 	V := sessionUtils.LeerGalletaReporte(ctx, "vista")
+	// v := sessionUtils.LeerGalletaGeneral(ctx, "vista")
+
+	// fmt.Println(v, reflect.TypeOf(v))
 
 	if V != nil {
 		fmt.Println()
@@ -340,7 +357,7 @@ func CapturaRespuestaPost(ctx *iris.Context) {
 	fmt.Println("Timer.CapturaRespuestaPost")
 	var vista reporte.ReporteVista
 	V := sessionUtils.LeerGalletaReporte(ctx, "vista")
-	fmt.Println("vista: ", V)
+	// fmt.Println("vista: ", V)
 
 	if V != nil {
 		vista.CodigoBarraTicket.CodigoBarraTicket = V.CodigoBarraTicket

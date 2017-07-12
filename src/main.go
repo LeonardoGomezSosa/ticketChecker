@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	"./Controladores/EliminarCuenta"
+	"./Controladores/ExpresionesRegulares"
 	"./Controladores/Login"
 	"./Controladores/Recuperar"
 	"./Controladores/Sesiones"
+	"./Controladores/Surtidor"
 	"./Controladores/Timer"
 
 	"./Modulos/Variables"
@@ -42,6 +44,8 @@ func main() {
 	app.Get("/Login", Login.IndexGet)
 	app.Post("/Login", Login.IndexPost)
 
+	app.Get("/admin", Login.Admin)
+
 	app.Get("/Recuperar", Recuperar.IndexGet)
 	app.Post("/Recuperar", Recuperar.IndexPost)
 
@@ -57,6 +61,61 @@ func main() {
 	app.Get("/RecibirRespuesta", Timer.CapturaRespuestaGet)
 	app.Post("/RecibirRespuesta", Timer.CapturaRespuestaPost)
 
+	app.Get("/Surtidors", SurtidorControler.IndexGet)
+	app.Post("/Surtidors", SurtidorControler.IndexPost)
+
+	//Alta
+	app.Get("/Surtidors/alta", SurtidorControler.AltaGet)
+	app.Post("/Surtidors/alta", SurtidorControler.AltaPost)
+
+	//Detalle
+	app.Get("/Surtidors/detalle", SurtidorControler.DetalleGet)
+	app.Post("/Surtidors/detalle", SurtidorControler.DetallePost)
+	app.Get("/Surtidors/detalle/:ID", SurtidorControler.DetalleGet)
+	app.Post("/Surtidors/detalle/:ID", SurtidorControler.DetallePost)
+
+	//Edicion
+	app.Get("/Surtidors/edita", SurtidorControler.EditaGet)
+	app.Post("/Surtidors/edita", SurtidorControler.EditaPost)
+	app.Get("/Surtidors/edita/:ID", SurtidorControler.EditaGet)
+	app.Post("/Surtidors/edita/:ID", SurtidorControler.EditaPost)
+	//Elimina
+	app.Get("/Surtidors/Elimina/", SurtidorControler.EliminaGet)
+	app.Post("/Surtidors/Elimina/", SurtidorControler.EliminaPost)
+	app.Get("/Surtidors/Elimina/:ID", SurtidorControler.EliminaGet)
+	app.Post("/Surtidors/Elimina/:ID", SurtidorControler.EliminaPost)
+
+	app.Post("/Surtidors/search", SurtidorControler.BuscaPagina)
+	// app.Post("/Surtidors/agrupa", SurtidorControler.MuestraIndexPorGrupo)
+
+	//Index (Búsqueda)
+	app.Get("/Expresions", ExpresionControler.IndexGet)
+	app.Post("/Expresions", ExpresionControler.IndexPost)
+
+	//Alta
+	app.Get("/Expresions/alta", ExpresionControler.AltaGet)
+	app.Post("/Expresions/alta", ExpresionControler.AltaPost)
+
+	//Edicion
+	app.Get("/Expresions/edita", ExpresionControler.EditaGet)
+	app.Post("/Expresions/edita", ExpresionControler.EditaPost)
+	app.Get("/Expresions/edita/:ID", ExpresionControler.EditaGet)
+	app.Post("/Expresions/edita/:ID", ExpresionControler.EditaPost)
+
+	//Detalle
+	app.Get("/Expresions/detalle", ExpresionControler.DetalleGet)
+	app.Post("/Expresions/detalle", ExpresionControler.DetallePost)
+	app.Get("/Expresions/detalle/:ID", ExpresionControler.DetalleGet)
+	app.Post("/Expresions/detalle/:ID", ExpresionControler.DetallePost)
+
+	//Elimina
+	app.Get("/Expresions/Elimina", ExpresionControler.EliminaGet)
+	app.Post("/Expresions/Elimina", ExpresionControler.EliminaPost)
+	app.Get("/Expresions/Elimina/:ID", ExpresionControler.EliminaGet)
+	app.Post("/Expresions/Elimina/:ID", ExpresionControler.EliminaPost)
+
+	app.Post("/Expresions/search", ExpresionControler.BuscaPagina)
+	// app.Post("/Expresions/agrupa", ExpresionControler.MuestraIndexPorGrupo)
 	//###################### Listen Server #############################
 
 	if DataCfg.Puerto != "" {

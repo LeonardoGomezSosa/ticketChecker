@@ -1,0 +1,88 @@
+<!-- ############################## <  VISTA INDEX > #####################################-->
+<!-- ############################## <  index.html  > #####################################-->
+<!-- ############################## <  VISTA GENERAL > #####################################-->
+
+<!-- INICIO PAGINA -->
+<!DOCTYPE html>
+<html lang="es">
+
+<!-- INICIO CABECERA ################################################################################-->
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Surtidores</title>
+	<!-- Bootstrap -->
+	{{template "estilos_ticket"}}
+	<!--<link href="../Resources/Plugins/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">-->
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	{{template "scripts_ticket"}}
+	<script type="text/javascript" src="/js/Surtidor/Surtidor.js"></script>
+
+
+</head>
+
+<body>
+	{{template "cabecera_ticket"}}
+	<section style="padding-bottom: 5%;" id="SeccionCuerpo">
+		{{template "menu_ticket"}}
+		<div class="container-fluid">
+			<div class="side-body">
+				{{if .SEstado}} {{if .SMsj}}
+				<div class="alert alert-success alert-dismissible" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<strong><h3>{{.SMsj}}</h3></strong>
+				</div>
+				{{end}} {{else}} {{if .SMsj}}
+				<div class="alert alert-danger alert-dismissible" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<strong><h3>{{.SMsj}}</h3></strong>
+				</div>
+				{{end}} {{end}}
+
+				<div class="row well">
+					<h3>Listado de Surtidores</h3>
+					<div class="clearfix">&nbsp;</div>
+
+					<div class="form-group">
+						<div class="col-md-11 text-right">
+							<button type="button" onclick="window.location.href = '/Surtidors/alta';" class="btn-lg btn-primary"><span class="glyphicon glyphicon-pencil"></span> Nuevo</button>
+						</div>
+					</div>
+					<div class="clearfix">&nbsp;</div>
+
+					<div class="clearfix">&nbsp;</div>
+					<div id="Paginacion" class="PPaginacion">
+						{{.SIndex.SPaginacion}}
+					</div>
+					<table class="table table-hover table-striped table-responsive">
+						<thead id="Cabecera" class="bg-primary">
+							{{.SIndex.SCabecera}}
+						</thead>
+						<tbody id="Cuerpo">
+							{{.SIndex.SBody}}
+						</tbody>
+
+					</table>
+
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+
+	<footer></footer>
+</body>
+
+<!-- FIN BODY -->
+
+<!-- FIN PAGINA -->
+
+</html>

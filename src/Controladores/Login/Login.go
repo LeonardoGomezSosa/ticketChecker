@@ -23,10 +23,15 @@ type Errores struct {
 
 //IndexGet renderea al index de Almacen
 func IndexGet(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
 	fmt.Println("Login.Login.go: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+
 	if sessionUtils.IsStarted(ctx) {
 		fmt.Println("Se redirige al inicio si ya existe una cookie")
-		ctx.Redirect("/Timer", 301)
+		ctx.Redirect("/admin", 301)
 	} else {
 		ctx.Render("Login/login.html", nil)
 	}
@@ -43,7 +48,7 @@ func IndexPost(ctx *iris.Context) {
 
 	Usuario := ctx.FormValue("Usuario")
 	Password := ctx.FormValue("Password")
-
+	fmt.Println(Usuario, Password)
 	fmt.Printf("u: %v\np:%v\n", Usuario, Password)
 	Usuario = MoGeneral.LimpiarCadena(Usuario)
 	Password = MoGeneral.LimpiarCadena(Password)
@@ -84,7 +89,7 @@ func IndexPost(ctx *iris.Context) {
 				fmt.Println(ctx.GetCookie("Usuario"))
 			}
 			//redireccionar
-			ctx.Redirect("/Timer", 301)
+			ctx.Redirect("/admin", 301)
 		}
 	}
 
@@ -132,4 +137,17 @@ func ValidarUsuario(u string, p string) (bool, *usuario.Usuario) {
 
 	return false, &usr
 
+}
+
+func Admin(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Login.Admin.go: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	if sessionUtils.IsStarted(ctx) {
+		ctx.Render("Admin/index.html", nil)
+	} else {
+		ctx.Redirect("/Login", 301)
+	}
 }
