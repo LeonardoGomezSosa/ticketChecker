@@ -10,6 +10,7 @@ $(document).ready(function () {
 	console.log("-----------------");
 	$(".waitgif").hide();
 	// var validator = valida();
+		JsBarcode("#barcode", $("#CodigoBarra").val());
 });
 
 // function valida() {
@@ -170,3 +171,13 @@ function SubmitGroup() {
 	});
 }
 
+function printDiv(divId){
+    var divToPrint = document.getElementById(divId);
+    newWin= window.open();
+    newWin.document.write('<style>table,tr,td,th{border-collapse:collapse;border:1px solid black;}</style>');
+    newWin.document.write(divToPrint.innerHTML);
+    newWin.document.close();
+    newWin.focus();
+    newWin.print();
+    newWin.close();
+}

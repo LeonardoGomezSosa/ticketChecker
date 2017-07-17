@@ -515,7 +515,7 @@ func BuscaPagina(ctx *iris.Context) {
 	if !sessionUtils.IsStarted(ctx) {
 		ctx.Redirect("/Login", 301)
 	}
-	var Send ExpresionesRegulares.SExpresion
+	var Send Surtidor.SSurtidor
 	Pagina := MoGeneral.LimpiarCadena(ctx.FormValue("Pag"))
 	if Pagina != "" {
 		num, _ := strconv.Atoi(Pagina)

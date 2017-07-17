@@ -16,6 +16,8 @@
 	<title>Detalle Surtidor</title>
 	<!-- Bootstrap -->
 	{{template "estilos_ticket"}}
+	<link href="/css/impresion.css" rel="stylesheet" media="print" />
+
 	<!--<link href="../Resources/Plugins/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">-->
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -24,8 +26,8 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 	{{template "scripts_ticket"}}
-	<script type="text/javascript" src="/js/Surtidor/Surtidor.js"></script>
 	<script type="text/javascript" src="/js/barcode/JsBarcode.code128.min.js"></script>
+	<script type="text/javascript" src="/js/Surtidor/Surtidor.js"></script>
 
 </head>
 
@@ -47,62 +49,67 @@
 				</div>
 				{{end}} {{end}}
 
-
-				<h1>Detalle de Surtidor</h1>
 				<form id="Form_Detalle_Surtidor" class="form-horizontal" method="POST">
-
-
-					<div class="form-group">
-						<label class="col-sm-4 control-label" for="ID">ID:</label> {{if .SurtidorSS.ECodigoBarraSurtidor.IEstatus}}
-						<div class="col-sm-5 has-feedback has-error">
-							<input readonly type="text" name="ID" id="ID" class="form-control" value="{{.SurtidorSS.ID.Hex}}" aria-required="true" aria-describedby="CodigoBarra-error"
-							 aria-invalid="true">
-							<span class="glyphicon form-control-feedback glyphicon-remove"></span>
-							<em id="CodigoBarra-error" class="error help-block">{{.SurtidorSS.ECodigoBarraSurtidor.IMsj}}</em>
+					<div class="printable" id="printable">
+						<div class="col-md-6" id="reverso">
+							<h1 id="reversoH">Codigo de Barra:</h1>
+							<div class="form-group">
+								{{if .SurtidorSS.ECodigoBarraSurtidor.IEstatus}}
+								<div class="col-sm-5 has-feedback has-error">
+									<svg id="barcode" class="form-control"></svg>
+									<input readonly type="hidden" name="CodigoBarra" id="CodigoBarra" class="form-control" value="{{.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra}}"
+									 aria-required="true" aria-describedby="CodigoBarra-error" aria-invalid="true">
+									<span class="glyphicon form-control-feedback glyphicon-remove"></span>
+									<em id="CodigoBarra-error" class="error help-block">{{.SurtidorSS.ECodigoBarraSurtidor.IMsj}}</em>
+								</div>
+								{{else}}
+								<div class="col-sm-5">
+									<input readonly type="hidden" name="CodigoBarra" id="CodigoBarra" class="form-control" value="{{.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra}}">
+									<svg id="barcode"></svg>
+								</div>
+								{{end}}
+							</div>
 						</div>
-						{{else}}
-						<div class="col-sm-5">
-							<input readonly type="text" name="ID" id="ID" class="form-control" value="{{.SurtidorSS.ID.Hex}}">
+						<div class="col-md-6" id="anverso">
+							<h1 id="anversoH">Detalle de Surtidor</h1>
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="ID">ID:</label> {{if .SurtidorSS.ECodigoBarraSurtidor.IEstatus}}
+								<div class="col-sm-5 has-feedback has-error">
+									<input readonly type="text" name="ID" id="ID" class="form-control" value="{{.SurtidorSS.ID.Hex}}" aria-required="true" aria-describedby="CodigoBarra-error"
+									 aria-invalid="true">
+									<span class="glyphicon form-control-feedback glyphicon-remove"></span>
+									<em id="CodigoBarra-error" class="error help-block">{{.SurtidorSS.ECodigoBarraSurtidor.IMsj}}</em>
+								</div>
+								{{else}}
+								<div class="col-sm-5">
+									<input readonly type="text" name="ID" id="ID" class="form-control" value="{{.SurtidorSS.ID.Hex}}">
+								</div>
+								{{end}}
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-4 control-label" for="Usuario">Usuario:</label> {{if .SurtidorSS.EUsuarioSurtidor.IEstatus}}
+								<div class="col-sm-5 has-feedback has-error">
+									<input readonly type="text" name="Usuario" id="Usuario" class="form-control" value="{{.SurtidorSS.EUsuarioSurtidor.Usuario}}"
+									 aria-required="true" aria-describedby="Usuario-error" aria-invalid="true">
+									<span class="glyphicon form-control-feedback glyphicon-remove"></span>
+									<em id="Usuario-error" class="error help-block">{{.SurtidorSS.EUsuarioSurtidor.IMsj}}</em>
+								</div>
+								{{else}}
+								<div class="col-sm-5">
+									<input readonly type="text" name="Usuario" id="Usuario" class="form-control" value="{{.SurtidorSS.EUsuarioSurtidor.Usuario}}">
+								</div>
+								{{end}}
+							</div>
 						</div>
-						{{end}}
 					</div>
-					<div class="form-group">
-						<label class="col-sm-4 control-label" for="CodigoBarra">Codigo de Barra:</label> {{if .SurtidorSS.ECodigoBarraSurtidor.IEstatus}}
-						<div class="col-sm-5 has-feedback has-error">
-							<input readonly type="text" name="CodigoBarra" id="CodigoBarra" class="form-control" value="{{.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra}}"
-							 aria-required="true" aria-describedby="CodigoBarra-error" aria-invalid="true">
-							<span class="glyphicon form-control-feedback glyphicon-remove"></span>
-							<em id="CodigoBarra-error" class="error help-block">{{.SurtidorSS.ECodigoBarraSurtidor.IMsj}}</em>
-						</div>
-						{{else}}
-						<div class="col-sm-5">
-							<input readonly type="text" name="CodigoBarra" id="CodigoBarra" class="form-control" value="{{.SurtidorSS.ECodigoBarraSurtidor.CodigoBarra}}">
-						</div>
-						{{end}}
-					</div>
-
-					<div class="form-group">
-						<label class="col-sm-4 control-label" for="Usuario">Usuario:</label> {{if .SurtidorSS.EUsuarioSurtidor.IEstatus}}
-						<div class="col-sm-5 has-feedback has-error">
-							<input readonly type="text" name="Usuario" id="Usuario" class="form-control" value="{{.SurtidorSS.EUsuarioSurtidor.Usuario}}"
-							 aria-required="true" aria-describedby="Usuario-error" aria-invalid="true">
-							<span class="glyphicon form-control-feedback glyphicon-remove"></span>
-							<em id="Usuario-error" class="error help-block">{{.SurtidorSS.EUsuarioSurtidor.IMsj}}</em>
-						</div>
-						{{else}}
-						<div class="col-sm-5">
-							<input readonly type="text" name="Usuario" id="Usuario" class="form-control" value="{{.SurtidorSS.EUsuarioSurtidor.Usuario}}">
-						</div>
-						{{end}}
-					</div>
-
-
 
 					<div class="form-group">
 						<div class="col-md-9 text-right">
 							<button data-toggle="tooltip" title="Index" type="button" onclick="window.location.href = '/Surtidors';" class="btn btn-secondary btn-lg"><span class="glyphicon glyphicon-list"></span></button>
 							<button type="button" data-toggle="tooltip" title="Elimina" onclick="EliminaSurtidor();" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button>
 							<button type="button" data-toggle="tooltip" title="Edita" onclick="EditaSurtidor('Detalle');" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-edit"></span> </button>
+							<button type="button" data-toggle="tooltip" title="Imprimir" onclick="window.print();" class="btn btn-secondary btn-lg"><span class="glyphicon glyphicon-print"></span> </button>
 							<button type="button" data-toggle="tooltip" title="Crea" onclick="window.location.href = '/Surtidors/alta';" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-pencil"></button>
 						</div>
 					</div>

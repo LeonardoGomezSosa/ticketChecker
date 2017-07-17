@@ -292,7 +292,7 @@ func GetRangeInPage(pagina int, elementosPorPagina int) ([]SurtidorMgo, error) {
 	}
 
 	for resultSet.Next() {
-		err := resultSet.Scan(&aux.IDSurtidor, &aux.CodigoBarra, &aux.Usuario)
+		err := resultSet.Scan(&aux.IDSurtidor, &aux.Usuario, &aux.CodigoBarra)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		} else {

@@ -179,7 +179,18 @@ body{
 .side-menu #search .panel-body {
   padding: 0;
 }
-.side-menu #search .panel-body .navbar-form {
+.side-menu #s    anverso {
+        padding: 5px;
+        border:3px dotted #000;
+        width: 50%;
+        float: left;
+    }
+    reverso {
+        padding: 5px;
+        border:3px dotted #000;
+        width: 50%;
+        float: left;
+    }earch .panel-body .navbar-form {
   padding: 0;
   padding-right: 50px;
   width: 100%;
