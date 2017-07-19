@@ -7,15 +7,15 @@ $("document").ready(function () {
     $("#AceptarRespuesta").on('click', function (e) {
         ValidarRespuesta();
     });
-    $("#EntradaR").on('keydown', function (event) {
-        if (event.keyCode == 13 || event.which == 13) {
+    $("#EntradaR").on('blur', function (event) {
+        // if (event.keyCode == 13 || event.which == 13) {
             ValidarRespuesta();
-        }
+        // }
     });
-    $("#Entrada").on('keydown', function (event) {
-        if (event.keyCode == 13 || event.which == 13) {
+    $("#AceptarCodigo").on('focus', function (event) {
+        // if (event.keyCode == 13 || event.which == 13) {
             ValidarOperacion();
-        }
+        // }
     });
 
 });
