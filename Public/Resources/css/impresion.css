@@ -1,0 +1,43 @@
+@media print {
+    .side-menu, header, button, .alert { display:none; }
+    #Form_Detalle_Surtidor #printable { 
+        display:block; 
+        border:1px dotted #000;
+        height: 5cm;
+        width: 8in;
+        padding-top: 1cm;
+        /*padding: 5mm;*/
+        /*margin: 5mm;*/
+        font-size: 10px; 
+        column-count: 2;
+        -webkit-column-count: 2;
+        -moz-column-count: 2;
+    }
+    #reversoH { 
+        display:none; 
+        font-size: 11px; 
+
+    }
+    #anverso {
+        width:3.9in;
+        padding-left: 1in;
+        float: left;
+    }
+    #reverso {
+        width:3.9in;
+        float: left;
+    }
+
+    @page {
+    size:8.5in 11in;  
+    }
+}
+/*@page {
+  size: 5.5in 8.5in;  
+  margin: 70pt 60pt 70pt;
+}*/
+
+ /*div.saltopagina{ 
+      display:block; 
+      page-break-before:always;
+   }*/

@@ -26,17 +26,22 @@
 </head>
 
 <body>
-
     {{template "cabecera_ticket"}}
-
     <section class="container">
         <input type="hidden" name="Estado" id="Estado" value={{.Estado}}>
         <input type="hidden" name="TimerOn" id="TimerOn" value={{.TimerOn}}>
         <input type="hidden" name="Concluido" id="Concluido" value={{.Concluido}}>
-        <label for="Ticket">Ticket: </label><input type="text" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}" readonly>
-        <label for="Ticket">Surtidor: </label><input type="text" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}" readonly>
-        {{$estado := .Estado}} 
-        {{if $estado}}
+        <div class="input-group">
+            <label for="Ticket" class="input-group-addon">Ticket: </label>
+            <input type="text" class="form-control  col-md-5" id="Ticket" name="Ticket" placeholder="Ticket" value="{{.CodigoBarraTicket.CodigoBarraTicket}}"
+                readonly>
+        </div>
+        <div class="input-group">
+            <label for="Ticket" class="input-group-addon">Surtidor: </label>
+            <input type="text" class="form-control col-md-5" id="Surtidor" name="Surtidor" placeholder="Surtidor" value="{{.CodigoBarraSurtidor.CodigoBarraSurtidor}}"
+                readonly>
+        </div>
+        {{$estado := .Estado}} {{if $estado}}
         <div class="alert alert-dismissable fade in alert-info" id="TimerDiv">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             <h4>
@@ -58,7 +63,7 @@
 
             <div class="input-group">
                 <label for="Entrada" class="input-group-addon">Codigo de Barras: </label>
-                <input type="text" class="form-control" id="Entrada" name="Entrada" >
+                <input type="text" class="form-control" id="Entrada" name="Entrada">
             </div>
 
             <div class="clearfix">&nbsp;</div>
