@@ -283,7 +283,7 @@ func LimpiarCadena(cadena string) string {
 //ValidaCadenaExpresion Sirve para reconocer si una cadena valida  :
 //recibe cadena, patron,  regresa true si la cadena coincide con el patron, false en otro caso
 func ValidaCadenaExpresion(cadena string, patron string) bool {
-	re := regexp.MustCompile(patron)
+	re := regexp.MustCompile("^" + patron + "$")
 	return re.MatchString(cadena)
 }
 
