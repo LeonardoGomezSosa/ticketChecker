@@ -58,6 +58,9 @@ func main() {
 	app.Get("/", Timer.IndexGet)
 	app.Post("/", Timer.IndexPost)
 
+	app.Get("/RespuestasPrint", Timer.ImprimirRespuestas)
+	app.Post("/RespuestasPrint", Timer.ImprimirRespuestas)
+
 	app.Get("/RecibirRespuesta", Timer.CapturaRespuestaGet)
 	app.Post("/RecibirRespuesta", Timer.CapturaRespuestaPost)
 

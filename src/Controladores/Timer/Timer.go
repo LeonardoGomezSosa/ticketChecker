@@ -16,6 +16,17 @@ import (
 
 var exp []ExpresionesRegulares.ExpresionRegular
 
+//ImprimirRespuestas renderea respuestas
+func ImprimirRespuestas(ctx *iris.Context) {
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+	fmt.Println("Timer.ImprimirRespuestas.go: GET")
+	fmt.Println("=================================")
+	fmt.Println("=================================")
+
+	ctx.Render("Respuestas/Respuestas.html", nil)
+}
+
 //IndexGet renderea al indObtenerExpresionesAlmacenadasex de Almacen
 func IndexGet(ctx *iris.Context) {
 	fmt.Println("=================================")
